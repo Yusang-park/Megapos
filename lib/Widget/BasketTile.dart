@@ -5,8 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:nfc_in_flutter/nfc_in_flutter.dart';
 
 class BasketTile extends StatefulWidget {
-  BasketTile({Key key, this.itemNo}) : super(key: key);
-
+  BasketTile({Key key, this.itemNo, this.selectedItem}) : super(key: key);
+  final StreamController ctrl = StreamController();
   String itemNo;
   SelectedItem selectedItem;
 
@@ -21,9 +21,14 @@ class _BasketTileState extends State<BasketTile> {
   void initState() {
     // TODO: implement initState
     super.initState();
-
-    widget.selectedItem = SelectedItem(widget.itemNo);
+    _tagStream(); //NFC 스트림
     loadDB();
+  }
+
+  void _tagStream() {
+    StreamSubscription subscription = widget.ctrl.stream.listen((data) {
+      setState(() {});
+    });
   }
 
   void loadDB() {
@@ -70,14 +75,23 @@ class _BasketTileState extends State<BasketTile> {
             ),
             IconButton(
               icon: Icon(Icons.indeterminate_check_box),
-              onPressed: () {},
+              onPressed: () {
+                setState(() {
+                  if (widget.selectedItem.count > 0)
+                    widget.selectedItem.count--;
+                });
+              },
             ),
             _isLoaded
                 ? Text(widget.selectedItem.count.toString())
                 : Text('    '),
             IconButton(
               icon: Icon(Icons.add_box),
-              onPressed: () {},
+              onPressed: () {
+                setState(() {
+                  widget.selectedItem.count++;
+                });
+              },
             ),
             _isLoaded
                 ? Text(
