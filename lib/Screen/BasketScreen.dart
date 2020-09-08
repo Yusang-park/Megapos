@@ -34,8 +34,7 @@ List<BasketTile> _list = [];
 
       setState(() {
         print(itemNo);
-        print('블라블라');
-        _list.add(BasketTile());
+        _list.add(BasketTile(itemNo: itemNo,));
 
       });
 

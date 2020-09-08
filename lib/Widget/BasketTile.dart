@@ -5,10 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:nfc_in_flutter/nfc_in_flutter.dart';
 
 class BasketTile extends StatefulWidget {
-//  BasketTile(String itemNo){
-//    selectedItem = SelectedItem(itemNo);
-//  }
+BasketTile({Key key,
+this.itemNo
+}) : super (key : key);
 
+  String itemNo;
   SelectedItem selectedItem;
 
 
@@ -17,6 +18,13 @@ class BasketTile extends StatefulWidget {
 }
 
 class _BasketTileState extends State<BasketTile> {
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    print(widget.itemNo+ "현재 장바구니 타일입니다.");
+  }
 
 //
 //  void addItem(){
