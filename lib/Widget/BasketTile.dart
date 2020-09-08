@@ -5,9 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:nfc_in_flutter/nfc_in_flutter.dart';
 
 class BasketTile extends StatefulWidget {
-BasketTile({Key key,
-this.itemNo
-}) : super (key : key);
+  BasketTile({Key key, this.itemNo}) : super(key: key);
 
   String itemNo;
   SelectedItem selectedItem;
@@ -17,82 +15,80 @@ this.itemNo
 }
 
 class _BasketTileState extends State<BasketTile> {
-int _time = 0;
+  bool _isLoaded = false;
 
   @override
-  void initState(){
+  void initState() {
     // TODO: implement initState
-
-    print(widget.itemNo + "타일");
-    Future.delayed(Duration(milliseconds: 1000)).then((value) {
-          widget.selectedItem = SelectedItem(widget.itemNo);
-      print(widget.selectedItem.item.name);
-          Timer.periodic(Duration(milliseconds: 3), (timer)
-          {
-            setState(() {
-//      }
-              //   _time++;
-              if (_time >= 9) timer.cancel();
-            }
-            );
-          });
-    });
     super.initState();
-    //print(widget.selectedItem.item.name);
+
+    widget.selectedItem = SelectedItem(widget.itemNo);
+    loadDB();
   }
 
-//    Future<void> loadDB() async{
-//      widget.selectedItem = await loadDB2();
-//    }
-//
-//    SelectedItem loadDB2(){
-//    return SelectedItem(widget.itemNo);
-//  }
+  void loadDB() {
+    Timer.periodic(Duration(milliseconds: 3), (timer) {
+      if (widget.selectedItem.item.name != null && //DB로드가 완료되었는지 검사
+          widget.selectedItem.item.price != null) {
+        timer.cancel(); //loop종료
+        setState(() {
+          _isLoaded = true; //DB로드 완료를 알리는 bool
+        });
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     final width = size.width;
     final height = size.height;
-    final vertical = height*0.02;
-    final horizontal = width*0.02;
+    final vertical = height * 0.02;
+    final horizontal = width * 0.02;
     final statusBarHeight = MediaQuery.of(context).padding.top;
-
-
 
     return Padding(
       padding: EdgeInsets.all(width * 0.04),
       child: Container(
-        height: height*0.1,
+        height: height * 0.1,
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(50),
-            border: Border.all(
-                color: Colors.black12,
-                width: 3      //아닐수도
-            )
-        ),
+            border: Border.all(color: Colors.black12, width: 3)),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-
-            SizedBox(width: width*0.04,),
-            Image.asset('assets/images/0.jpg',
+            SizedBox(
+              width: width * 0.04,
+            ),
+            Image.asset(
+              'assets/images/0.jpg', //이부분도 수정요망
               height: height * 0.08,
             ),
-
-            Text(widget.selectedItem.item.name),  //변경요망
-            Spacer(flex: 1,),
+            _isLoaded ? Text(widget.selectedItem.item.name) : Text('   '),
+            Spacer(
+              flex: 1,
+            ),
             IconButton(
               icon: Icon(Icons.indeterminate_check_box),
-              onPressed: (){},
+              onPressed: () {},
             ),
-            Text('1'),      // 변경요망
+            _isLoaded
+                ? Text(widget.selectedItem.count.toString())
+                : Text('    '),
             IconButton(
               icon: Icon(Icons.add_box),
-              onPressed: (){},
+              onPressed: () {},
             ),
-            Text('15000원', style: TextStyle(fontWeight: FontWeight.bold, fontSize: width*0.04),),    //변경요망
-            SizedBox(width: width*0.04,)
+            _isLoaded
+                ? Text(
+                    widget.selectedItem.item.price.toString() + '원',
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold, fontSize: width * 0.04),
+                  )
+                : Text('     '),
+            SizedBox(
+              width: width * 0.04,
+            )
           ],
         ),
       ),
