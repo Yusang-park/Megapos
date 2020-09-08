@@ -12,33 +12,43 @@ this.itemNo
   String itemNo;
   SelectedItem selectedItem;
 
-
   @override
   _BasketTileState createState() => _BasketTileState();
 }
 
 class _BasketTileState extends State<BasketTile> {
+int _time = 0;
 
   @override
-  void initState() {
+  void initState(){
     // TODO: implement initState
+
+    print(widget.itemNo + "타일");
+    Future.delayed(Duration(milliseconds: 1000)).then((value) {
+          widget.selectedItem = SelectedItem(widget.itemNo);
+      print(widget.selectedItem.item.name);
+          Timer.periodic(Duration(milliseconds: 3), (timer)
+          {
+            setState(() {
+//      }
+              //   _time++;
+              if (_time >= 9) timer.cancel();
+            }
+            );
+          });
+    });
     super.initState();
-    print(widget.itemNo+ "현재 장바구니 타일입니다.");
+    //print(widget.selectedItem.item.name);
   }
 
+//    Future<void> loadDB() async{
+//      widget.selectedItem = await loadDB2();
+//    }
 //
-//  void addItem(){
-//    StreamSubscription<NDEFMessage> _stream;
-//    String itemNo;
-//
-//    _stream = NFC.readNDEF(
-//      once: false,
-//      throwOnUserCancel: false,
-//    ).listen((NDEFMessage message) {
-//      setState(() {
-//
-//      });
-//    });
+//    SelectedItem loadDB2(){
+//    return SelectedItem(widget.itemNo);
+//  }
+
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -70,7 +80,7 @@ class _BasketTileState extends State<BasketTile> {
               height: height * 0.08,
             ),
 
-            Text('썬칩'),  //변경요망
+            Text(widget.selectedItem.item.name),  //변경요망
             Spacer(flex: 1,),
             IconButton(
               icon: Icon(Icons.indeterminate_check_box),

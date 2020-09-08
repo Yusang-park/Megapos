@@ -6,33 +6,33 @@ import 'package:flutter/material.dart';
 import 'Item.dart';
 
 class SelectedItem{
-  Item item;
+  ItemModel item;
   int count;
   int sumPrice;
 
   SelectedItem(String itemNo){
-    item = Item.fromDB(itemNo);
+    item = ItemModel(itemNo);
     count = 1;
-    sumPrice = int.parse(item.price);
+    print(item.itemNo+"여기");
   }
 
 
-
-  void plusCount(){
-    int stock = int.parse(item.stock);
-    if(stock > count) {
-      count++;
-      sumPrice = stock * count;
-    }
-  }
-
-  void minusCount(){
-    if(count > 0) {
-      count--;
-      sumPrice = int.parse(item.price) * count;
-    }
-  }
-  
+//
+//  void plusCount(){
+//    int stock = int.parse(item.stock);
+//    if(stock > count) {
+//      count++;
+//      sumPrice = stock * count;
+//    }
+//  }
+//
+//  void minusCount(){
+//    if(count > 0) {
+//      count--;
+//      sumPrice = int.parse(item.price) * count;
+//    }
+//  }
+//
 }
 
 

@@ -1,25 +1,41 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class Item {
+class ItemModel {
   String itemNo;
   String name;
-  String price;
-  String stock;
-  String image;
+  int price;
+  int stock;
+  //String image;
 
 
-  //DB에서 아이템 객체 생성성
-  Item.fromDB(String itemNo){
-    CollectionReference item = FirebaseFirestore.instance.collection('Product');
+ItemModel(String itemNo){
+  CollectionReference firebase = FirebaseFirestore.instance.collection('Product');
+  this.itemNo = itemNo;
+  firebase.doc(itemNo).get().then((DocumentSnapshot document){
+    this.name = document.data()['Name'];
 
-    item.doc(itemNo).get().then((DocumentSnapshot document){
-      itemNo = itemNo;
-      name = document.data()['Name'];
-      price = document.data()['Price'];
-      stock = document.data()['Stock'];
-      image = 'assetes/images/' + itemNo.toString() + '.jpg';
-    });
+ //  price = document.data()['Price'];
+   // stock = document.data()['Stock'];
+   // image = 'assetes/images/' + itemNo.toString() + '.jpg';
+  });
   }
+}
+
+
+//
+//  //DB에서 아이템 객체 생성성
+//  Item.loadDB(String itemNo){
+//    CollectionReference item = FirebaseFirestore.instance.collection('Product');
+//
+//    item.doc(itemNo).get().then((DocumentSnapshot document){
+//      itemNo = itemNo;
+//      name = document.data()['Name'];
+//      price = document.data()['Price'];
+//      stock = document.data()['Stock'];
+//      image = 'assetes/images/' + itemNo.toString() + '.jpg';
+
+//    });
+//  }
 
 
 
@@ -27,4 +43,3 @@ class Item {
 
 
 
-}
