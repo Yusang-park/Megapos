@@ -59,19 +59,6 @@ class _BasketScreenState extends State<BasketScreen> {
           ));
         });
       }
-
-      // for (int i = 0; i < _list.length; i++) {
-      //   //현재 장바구니를 검사함.
-      //   if (_list[i].selectedItem.item.itemNo == itemNo) {
-      //     //태그된 아이템을 찾았다면
-      //     _list[i].selectedItem.count++;
-      //     //tile을 생성하지 않고 개수를 늘린다.
-      //   } else {
-      //     setState(() {
-      //       _list.add(BasketTile(itemNo: itemNo, selectedItem: loadDB(itemNo)));
-      //     });
-      //   }
-      // }
     });
   }
 
