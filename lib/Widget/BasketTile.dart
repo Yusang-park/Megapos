@@ -5,10 +5,16 @@ import 'package:flutter/material.dart';
 import 'package:nfc_in_flutter/nfc_in_flutter.dart';
 
 class BasketTile extends StatefulWidget {
-  BasketTile({Key key, this.itemNo, this.selectedItem}) : super(key: key);
+  BasketTile({
+    Key key,
+    this.itemNo,
+    this.selectedItem,
+    this.removeMethod,
+  }) : super(key: key);
   final StreamController ctrl = StreamController();
   String itemNo;
   SelectedItem selectedItem;
+  Function removeMethod;
 
   @override
   _BasketTileState createState() => _BasketTileState();
@@ -19,28 +25,64 @@ class _BasketTileState extends State<BasketTile> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     _tagStream(); //NFC 스트림
     loadDB();
   }
 
   void _tagStream() {
+    //Stream from BasketScreen, 상품 중복 태그시 처리 부분
     StreamSubscription subscription = widget.ctrl.stream.listen((data) {
-      setState(() {});
+      increasCount();
     });
   }
 
   void loadDB() {
+    //3초마다 DB로드가 완료되었는지 검사
     Timer.periodic(Duration(milliseconds: 3), (timer) {
-      if (widget.selectedItem.item.name != null && //DB로드가 완료되었는지 검사
+      if (widget.selectedItem.item.name != null &&
           widget.selectedItem.item.price != null) {
-        timer.cancel(); //loop종료
+        //loop종료
+        timer.cancel();
+        //load된 DB를 화면에 갱신
         setState(() {
-          _isLoaded = true; //DB로드 완료를 알리는 bool
+          widget.selectedItem.sumPrice = widget.selectedItem.item.price;
+          _isLoaded = true; //true면 화면 데이터가 DB데이터로 변경
         });
       }
     });
+  }
+
+//TODO : 재고가 마이너스가 되어도 되는지 고민해보아야함.
+
+  void increasCount() {
+    setState(() {
+      widget.selectedItem.count++;
+      widget.selectedItem.sumPrice =
+          widget.selectedItem.count * widget.selectedItem.item.price;
+    });
+
+    if (widget.selectedItem.item.stock < widget.selectedItem.count) {
+      //스낵바(toast) 메시지
+      Scaffold.of(context).showSnackBar(SnackBar(
+        content: Text('현재 재고보다 많은 수량이 담겼습니다.\n구매할 수량을 확인해주세요.'),
+        //TODO : 안내사운드와 바코드 사운드를 출력해야함.
+      ));
+    }
+  }
+
+//TODO : 수량이 0이되면 위젯 삭제 -> stream 사용이 더 옳은지 고민해야함.
+  void decreasCount() {
+    setState(() {
+      widget.selectedItem.count--;
+      widget.selectedItem.sumPrice =
+          widget.selectedItem.item.price * widget.selectedItem.count;
+    });
+    if (widget.selectedItem.count < 1) {
+      print('정상');
+      widget.removeMethod(widget);
+      dispose(); //close widet, 반드시 필요함.
+    }
   }
 
   @override
@@ -65,9 +107,19 @@ class _BasketTileState extends State<BasketTile> {
             SizedBox(
               width: width * 0.04,
             ),
-            Image.asset(
-              'assets/images/0.jpg', //이부분도 수정요망
-              height: height * 0.08,
+            _isLoaded
+                ? Container(
+                    decoration: BoxDecoration(
+                        border: Border.all(color: Colors.black12, width: 3)),
+                    child: Image.asset(
+                      widget.selectedItem.item.image, //★이미지가 assets과 연동되도록 변경요망
+                      height: height * 0.07,
+                    ))
+                : CircleAvatar(
+                    radius: 1,
+                  ),
+            SizedBox(
+              width: width * 0.02,
             ),
             _isLoaded ? Text(widget.selectedItem.item.name) : Text('   '),
             Spacer(
@@ -76,10 +128,7 @@ class _BasketTileState extends State<BasketTile> {
             IconButton(
               icon: Icon(Icons.indeterminate_check_box),
               onPressed: () {
-                setState(() {
-                  if (widget.selectedItem.count > 0)
-                    widget.selectedItem.count--;
-                });
+                decreasCount();
               },
             ),
             _isLoaded
@@ -88,14 +137,12 @@ class _BasketTileState extends State<BasketTile> {
             IconButton(
               icon: Icon(Icons.add_box),
               onPressed: () {
-                setState(() {
-                  widget.selectedItem.count++;
-                });
+                increasCount();
               },
             ),
             _isLoaded
                 ? Text(
-                    widget.selectedItem.item.price.toString() + '원',
+                    widget.selectedItem.sumPrice.toString() + '원',
                     style: TextStyle(
                         fontWeight: FontWeight.bold, fontSize: width * 0.04),
                   )
@@ -108,6 +155,4 @@ class _BasketTileState extends State<BasketTile> {
       ),
     );
   }
-
-//  }
 }

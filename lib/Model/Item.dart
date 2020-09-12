@@ -16,7 +16,7 @@ class ItemModel {
 
       this.price = document.data()['Price'];
       this.stock = document.data()['Stock'];
-      this.image = 'assetes/images/' + itemNo.toString() + '.jpg';
+      this.image = 'assets/images/' + itemNo.toString() + '.jpg';
     });
   }
 }

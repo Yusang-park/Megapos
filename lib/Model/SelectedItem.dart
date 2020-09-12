@@ -5,17 +5,16 @@ import 'package:flutter/material.dart';
 
 import 'Item.dart';
 
-class SelectedItem{
+class SelectedItem {
   ItemModel item;
   int count;
   int sumPrice;
 
-  SelectedItem(String itemNo){
+  SelectedItem(String itemNo) {
     item = ItemModel(itemNo);
     count = 1;
-    print(item.itemNo+"여기");
+    print(item.itemNo + "번 아이템 클래스 생성");
   }
-
 
 //
 //  void plusCount(){
@@ -34,6 +33,3 @@ class SelectedItem{
 //  }
 //
 }
-
-
-

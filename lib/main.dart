@@ -4,9 +4,12 @@ import 'dart:isolate';
 import 'package:capstone/Screen/BasketScreen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:nfc_in_flutter/nfc_in_flutter.dart';
 
 void main() {
+  SystemChrome.setSystemUIOverlayStyle(
+      SystemUiOverlayStyle(statusBarColor: Color(0xFFF9F9F9)));
   runApp(MyApp());
 }
 
@@ -17,9 +20,13 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-      ),
+          primarySwatch: Colors.blue,
+          visualDensity: VisualDensity.adaptivePlatformDensity,
+          buttonTheme: ButtonThemeData(
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
+            buttonColor: Colors.deepPurple,
+          )),
       home: MyHomePage(),
     );
   }
@@ -51,7 +58,6 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-
   @override
   void initState() {
     // TODO: implement initState
@@ -62,10 +68,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        body: BasketScreen()
-    );
+    return Scaffold(body: BasketScreen());
   }
 }
-
-

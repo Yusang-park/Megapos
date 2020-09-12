@@ -2,14 +2,11 @@ import 'dart:async';
 
 import 'package:capstone/Model/SelectedItem.dart';
 import 'package:capstone/Widget/BasketTile.dart';
+import 'package:capstone/Widget/ConfirmDialog.dart';
 import 'package:flutter/material.dart';
 import 'package:nfc_in_flutter/nfc_in_flutter.dart';
 
 import '../Model/SelectedItem.dart';
-import '../Model/SelectedItem.dart';
-import '../Model/SelectedItem.dart';
-import '../Widget/BasketTile.dart';
-import '../Widget/BasketTile.dart';
 
 class BasketScreen extends StatefulWidget {
   @override
@@ -22,7 +19,6 @@ class _BasketScreenState extends State<BasketScreen> {
 
   @override
   void initState() {
-    // TODO: implement initState
     _tagStream();
     super.initState();
   }
@@ -30,7 +26,6 @@ class _BasketScreenState extends State<BasketScreen> {
   void _tagStream() {
     StreamSubscription<NDEFMessage> _stream;
     String itemNo;
-    bool _trigger = false;
 //NFC 스트림
     _stream = NFC
         .readNDEF(
@@ -40,26 +35,52 @@ class _BasketScreenState extends State<BasketScreen> {
         .listen((NDEFMessage message) {
       itemNo = message.payload.toString();
 //NFC 끝
+      bool _trigger = false;
+      print('상품번호 : ' + itemNo);
 
-      print(itemNo);
-      for (int i = 0; i < _list.length; i++) {
-        if (_list[i].itemNo == itemNo) {
-          print('동일상품존재');
-          _trigger = true;
-          _list[i].selectedItem.count++;
-          _list[i].ctrl.sink.add(true);
+      if (itemNo == null) {
+        //태그 오류로 상품번호가 Null이면 처리하는 부분
+        Scaffold.of(context)
+            .showSnackBar(SnackBar(content: Text("가격표에 다시 한번 태그해주세요!")));
+        //TODO : 안내사운드를 출력해야함.
+
+      } else {
+        //TODO : 태그사운드를 출력해야함.
+        //이미 장바구니에 담긴 아이템이라면
+        for (int i = 0; i < _list.length; i++) {
+          if (_list[i].itemNo == itemNo) {
+            print('장바구니 카운트 +1');
+            _trigger = true;
+            _list[i].ctrl.sink.add(true); //basketTile stream에 전송
+          }
+        }
+        //TODO :번호가 없거나 이미지가 없을때 처리가 필요함.
+        if (_trigger == false) {
+          setState(() {
+            _list.add(BasketTile(
+              itemNo: itemNo,
+              selectedItem: loadDB(itemNo),
+              removeMethod: removeTile,
+            ));
+          });
         }
       }
-
-      if (_trigger == false) {
-        setState(() {
-          _list.add(BasketTile(
-            itemNo: itemNo,
-            selectedItem: loadDB(itemNo),
-          ));
-        });
-      }
     });
+  }
+
+//delect tile
+  void removeTile(BasketTile removeTile) {
+    setState(() {
+      _list.remove(removeTile);
+      print('삭제함수작동');
+    });
+  }
+
+//reset Basket
+  void resetBasket() {
+    _list.clear();
+    //TODO : 여기선 dispose()이 필요없는지?
+    setState(() {});
   }
 
   SelectedItem loadDB(itemNo) {
@@ -111,19 +132,68 @@ class _BasketScreenState extends State<BasketScreen> {
                         Icons.search,
                       ),
                       onPressed: () {
+                        //TODO : Dialog 필요함
+
                         _searchController.clear();
                       },
                     ),
                   ],
                 ),
               ),
-              Flexible(
-                  flex: 1,
-                  child: ListView.builder(
-                      itemCount: _list.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        return _list[index];
-                      })),
+              Divider(),
+              //TODO : 리스트뷰를 스크롤바로 감싸고싶은데 안되네
+              Expanded(
+                flex: 1,
+                child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: _list.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      return _list[index];
+                    }),
+              ),
+
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  ButtonTheme(
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(50)),
+                      child: RaisedButton(
+                        onPressed: () {
+                          //TODO : 결제부분 만들기.
+                        },
+                        child: Text('결제하기'),
+                      )),
+                  SizedBox(width: width * 0.05),
+                  ButtonTheme(
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(50)),
+                    child: RaisedButton(
+                        onPressed: () {
+                          showDialog(
+                              //Stateful Dialog 생성하기
+                              context: context,
+                              builder: (context) {
+                                return StatefulBuilder(builder:
+                                    (BuildContext context,
+                                        StateSetter setState) {
+                                  return ConfirmDialog(
+                                    bodyText: '정말 장바구니를 비울까요?\n다시 한번 확인해주세요.',
+                                  );
+                                });
+                              }).then((value) {
+                            if (value == true) {
+                              resetBasket();
+                            }
+                          });
+                        },
+                        child: Text('장바구니 비우기')),
+                  ),
+                ],
+              ),
+              SizedBox(
+                height: height * 0.02,
+              ),
             ]));
   }
 }
