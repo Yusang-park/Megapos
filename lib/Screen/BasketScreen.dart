@@ -5,6 +5,7 @@ import 'package:capstone/Widget/BasketTile.dart';
 import 'package:capstone/Widget/ConfirmDialog.dart';
 import 'package:flutter/material.dart';
 import 'package:nfc_in_flutter/nfc_in_flutter.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 
 import '../Model/SelectedItem.dart';
 
@@ -16,6 +17,14 @@ class BasketScreen extends StatefulWidget {
 class _BasketScreenState extends State<BasketScreen> {
   TextEditingController _searchController = TextEditingController();
   List<BasketTile> _list = [];
+  FlutterTts flutterTts = FlutterTts();
+
+  Future _speak(String str) async{
+    flutterTts.setLanguage("ko-KR");
+    flutterTts.setPitch(0.85);
+    print(await flutterTts.getVoices);
+    await flutterTts.speak(str);
+  }
 
   @override
   void initState() {
@@ -42,7 +51,7 @@ class _BasketScreenState extends State<BasketScreen> {
         //태그 오류로 상품번호가 Null이면 처리하는 부분
         Scaffold.of(context)
             .showSnackBar(SnackBar(content: Text("가격표에 다시 한번 태그해주세요!")));
-        //TODO : 안내사운드를 출력해야함.
+        _speak("가격표에 다시 한번 태그해주세요");
 
       } else {
         //TODO : 태그사운드를 출력해야함.
@@ -54,8 +63,12 @@ class _BasketScreenState extends State<BasketScreen> {
             _list[i].ctrl.sink.add(true); //basketTile stream에 전송
           }
         }
-        //TODO :번호가 없거나 이미지가 없을때 처리가 필요함.
+        //TODO : 이미지가 없을때 처리가 필요함.
         if (_trigger == false) {
+          if(itemNo=="null"){
+            _speak("잘못된 상품정보입니다. ");
+            return;
+          }
           setState(() {
             _list.add(BasketTile(
               itemNo: itemNo,
@@ -68,7 +81,7 @@ class _BasketScreenState extends State<BasketScreen> {
     });
   }
 
-//delect tile
+  //delect tile
   void removeTile(BasketTile removeTile) {
     setState(() {
       _list.remove(removeTile);
@@ -79,7 +92,6 @@ class _BasketScreenState extends State<BasketScreen> {
 //reset Basket
   void resetBasket() {
     _list.clear();
-    //TODO : 여기선 dispose()이 필요없는지?
     setState(() {});
   }
 
@@ -132,8 +144,23 @@ class _BasketScreenState extends State<BasketScreen> {
                         Icons.search,
                       ),
                       onPressed: () {
-                        //TODO : Dialog 필요함
+                        //TODO : Dialog 리스트뷰 필요함
 
+                        showDialog(
+                          //Stateful Dialog 생성하기
+                            context: context,
+                            builder: (context) {
+                              return StatefulBuilder(builder:
+                                  (BuildContext context,
+                                  StateSetter setState) {
+                                return ConfirmDialog(
+
+                                );
+                              });
+                            }).then((value) {
+                          if (value == true) {
+                          }
+                        });
                         _searchController.clear();
                       },
                     ),
