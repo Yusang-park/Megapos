@@ -17,6 +17,7 @@ class BasketScreen extends StatefulWidget {
 class _BasketScreenState extends State<BasketScreen> {
   TextEditingController _searchController = TextEditingController();
   List<BasketTile> _list = [];
+  int _sumPrice = 0;
   FlutterTts flutterTts = FlutterTts();
 
   Future _speak(String str) async {
@@ -74,6 +75,9 @@ class _BasketScreenState extends State<BasketScreen> {
               selectedItem: loadDB(itemNo),
               removeMethod: removeTile,
             ));
+            for (int i = 0; i < _list.length; i++) {
+              _sumPrice = ++_list[i].selectedItem.sumPrice;
+            }
           });
         }
       }
@@ -164,7 +168,17 @@ class _BasketScreenState extends State<BasketScreen> {
                       return _list[index];
                     }),
               ),
-              Text('결제 금액 : '),
+
+              Padding(
+                padding: EdgeInsets.only(right: width * 0.04),
+                child: Align(
+                  alignment: Alignment.centerRight,
+                  child: Text(
+                    '결제 금액 :  $_sumPrice 원',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ),
               Divider(
                 thickness: 1,
               ),
