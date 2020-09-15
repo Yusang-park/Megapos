@@ -20,13 +20,22 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-          primarySwatch: Colors.blue,
-          visualDensity: VisualDensity.adaptivePlatformDensity,
-          buttonTheme: ButtonThemeData(
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
-            buttonColor: Colors.deepPurple,
-          )),
+        primarySwatch: Colors.deepPurple, //버튼 색상 등이 변경됨
+        primaryColor: Colors.deepPurple,
+        textTheme: TextTheme(
+          title: TextStyle(
+              color: Colors.deepPurple,
+              fontFamily: 'Jalnan',
+              fontWeight: FontWeight.bold),
+        ),
+        visualDensity: VisualDensity.adaptivePlatformDensity,
+        buttonTheme: ButtonThemeData(
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
+          buttonColor: Colors.deepPurple,
+          textTheme: ButtonTextTheme.accent,
+        ),
+      ),
       home: MyHomePage(),
     );
   }
@@ -60,7 +69,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   void initState() {
-    // TODO: implement initState
     initializeFlutterFire(); //파이어베이스 초기화
 
     super.initState();
