@@ -19,7 +19,7 @@ class _BasketScreenState extends State<BasketScreen> {
   List<BasketTile> _list = [];
   FlutterTts flutterTts = FlutterTts();
 
-  Future _speak(String str) async{
+  Future _speak(String str) async {
     flutterTts.setLanguage("ko-KR");
     flutterTts.setPitch(0.85);
     print(await flutterTts.getVoices);
@@ -52,7 +52,6 @@ class _BasketScreenState extends State<BasketScreen> {
         Scaffold.of(context)
             .showSnackBar(SnackBar(content: Text("가격표에 다시 한번 태그해주세요!")));
         _speak("가격표에 다시 한번 태그해주세요");
-
       } else {
         //TODO : 태그사운드를 출력해야함.
         //이미 장바구니에 담긴 아이템이라면
@@ -65,7 +64,7 @@ class _BasketScreenState extends State<BasketScreen> {
         }
         //TODO : 이미지가 없을때 처리가 필요함.
         if (_trigger == false) {
-          if(itemNo=="null"){
+          if (itemNo == "null") {
             _speak("잘못된 상품정보입니다. ");
             return;
           }
@@ -116,8 +115,10 @@ class _BasketScreenState extends State<BasketScreen> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Container(
-                child: Text('매장명이 들어가는 텍스트'),
-              ),
+                  child: Text(
+                '매장명이 들어가는 텍스트',
+                style: Theme.of(context).textTheme.title,
+              )),
               Divider(
                 thickness: 1,
               ),
@@ -144,23 +145,8 @@ class _BasketScreenState extends State<BasketScreen> {
                         Icons.search,
                       ),
                       onPressed: () {
-                        //TODO : Dialog 리스트뷰 필요함
+                        //TODO : 리스트 뷰 스크린 필요
 
-                        showDialog(
-                          //Stateful Dialog 생성하기
-                            context: context,
-                            builder: (context) {
-                              return StatefulBuilder(builder:
-                                  (BuildContext context,
-                                  StateSetter setState) {
-                                return ConfirmDialog(
-
-                                );
-                              });
-                            }).then((value) {
-                          if (value == true) {
-                          }
-                        });
                         _searchController.clear();
                       },
                     ),
@@ -178,7 +164,10 @@ class _BasketScreenState extends State<BasketScreen> {
                       return _list[index];
                     }),
               ),
-
+              Text('결제 금액 : '),
+              Divider(
+                thickness: 1,
+              ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
@@ -196,25 +185,26 @@ class _BasketScreenState extends State<BasketScreen> {
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(50)),
                     child: RaisedButton(
-                        onPressed: () {
-                          showDialog(
-                              //Stateful Dialog 생성하기
-                              context: context,
-                              builder: (context) {
-                                return StatefulBuilder(builder:
-                                    (BuildContext context,
-                                        StateSetter setState) {
-                                  return ConfirmDialog(
-                                    bodyText: '정말 장바구니를 비울까요?\n다시 한번 확인해주세요.',
-                                  );
-                                });
-                              }).then((value) {
-                            if (value == true) {
-                              resetBasket();
-                            }
-                          });
-                        },
-                        child: Text('장바구니 비우기')),
+                      onPressed: () {
+                        showDialog(
+                            //Stateful Dialog 생성하기
+                            context: context,
+                            builder: (context) {
+                              return StatefulBuilder(builder:
+                                  (BuildContext context, StateSetter setState) {
+                                return ConfirmDialog(
+                                  bodyText: '정말 장바구니를 비울까요?\n다시 한번 확인해주세요.',
+                                );
+                              });
+                            }).then((value) {
+                          if (value == true) {
+                            resetBasket();
+                          }
+                        });
+                      },
+                      textColor: Colors.white,
+                      child: Text('장바구니 비우기'),
+                    ),
                   ),
                 ],
               ),

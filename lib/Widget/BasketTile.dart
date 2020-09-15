@@ -95,7 +95,7 @@ class _BasketTileState extends State<BasketTile> {
     final statusBarHeight = MediaQuery.of(context).padding.top;
 
     return Padding(
-      padding: EdgeInsets.all(width * 0.04),
+      padding: EdgeInsets.all(width * 0.03),
       child: Container(
         height: height * 0.1,
         decoration: BoxDecoration(
@@ -105,7 +105,7 @@ class _BasketTileState extends State<BasketTile> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             SizedBox(
-              width: width * 0.04,
+              width: width * 0.03,
             ),
             _isLoaded
                 ? Container(
@@ -119,13 +119,14 @@ class _BasketTileState extends State<BasketTile> {
                     radius: 1,
                   ),
             SizedBox(
-              width: width * 0.02,
+              width: width * 0.01,
             ),
             _isLoaded ? Text(widget.selectedItem.item.name) : Text('   '),
             Spacer(
               flex: 1,
             ),
             IconButton(
+              padding: EdgeInsets.all(0),
               icon: Icon(Icons.indeterminate_check_box),
               onPressed: () {
                 decreasCount();
@@ -135,6 +136,7 @@ class _BasketTileState extends State<BasketTile> {
                 ? Text(widget.selectedItem.count.toString())
                 : Text('    '),
             IconButton(
+              padding: EdgeInsets.all(0),
               icon: Icon(Icons.add_box),
               onPressed: () {
                 increasCount();
@@ -144,7 +146,7 @@ class _BasketTileState extends State<BasketTile> {
                 ? Text(
                     widget.selectedItem.sumPrice.toString() + '원',
                     style: TextStyle(
-                        fontWeight: FontWeight.bold, fontSize: width * 0.04),
+                        fontWeight: FontWeight.bold, fontSize: width * 0.03),
                   )
                 : Text('     '),
             SizedBox(
