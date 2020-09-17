@@ -1,16 +1,17 @@
 import 'dart:async';
 
 import 'package:capstone/Model/SelectedItem.dart';
+import 'package:capstone/Model/payment.dart';
 import 'package:capstone/Widget/BasketTile.dart';
 import 'package:capstone/Widget/ConfirmDialog.dart';
 import 'package:flutter/material.dart';
 import 'package:nfc_in_flutter/nfc_in_flutter.dart';
 import 'package:flutter_tts/flutter_tts.dart';
+import '../Model/payment.dart';
 
 import '../Model/SelectedItem.dart';
 
 StreamController<int> sumStream = StreamController(); //장바구니 총 합계 스트림
-
 
 class BasketScreen extends StatefulWidget {
   @override
@@ -37,12 +38,11 @@ class _BasketScreenState extends State<BasketScreen> {
     super.initState();
   }
 
-  void _sumStream(){
+  void _sumStream() {
     StreamSubscription streamSubscription = sumStream.stream.listen((data) {
       setState(() {
         _sumPrice = _sumPrice + data;
       });
-
     });
   }
 
@@ -203,6 +203,11 @@ class _BasketScreenState extends State<BasketScreen> {
                           borderRadius: BorderRadius.circular(50)),
                       child: RaisedButton(
                         onPressed: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (BuildContext context) =>
+                                      Payment()));
                           //TODO : 결제부분 만들기.
                         },
                         child: Text('결제하기'),
