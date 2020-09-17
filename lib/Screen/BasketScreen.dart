@@ -75,9 +75,6 @@ class _BasketScreenState extends State<BasketScreen> {
               selectedItem: loadDB(itemNo),
               removeMethod: removeTile,
             ));
-            for (int i = 0; i < _list.length; i++) {
-              _sumPrice = ++_list[i].selectedItem.sumPrice;
-            }
           });
         }
       }
