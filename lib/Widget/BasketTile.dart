@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:capstone/Model/SelectedItem.dart';
+import 'package:capstone/Screen/BasketScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:nfc_in_flutter/nfc_in_flutter.dart';
 
@@ -30,6 +31,10 @@ class _BasketTileState extends State<BasketTile> {
     loadDB();
   }
 
+  void  _sumStream(int value){
+    sumStream.sink.add(value);
+  }
+
   void _tagStream() {
     //Stream from BasketScreen, 상품 중복 태그시 처리 부분
     StreamSubscription subscription = widget.ctrl.stream.listen((data) {
@@ -47,6 +52,7 @@ class _BasketTileState extends State<BasketTile> {
         //load된 DB를 화면에 갱신
         setState(() {
           widget.selectedItem.sumPrice = widget.selectedItem.item.price;
+          _sumStream(widget.selectedItem.item.price);
           _isLoaded = true; //true면 화면 데이터가 DB데이터로 변경
         });
       }
@@ -61,7 +67,7 @@ class _BasketTileState extends State<BasketTile> {
       widget.selectedItem.sumPrice =
           widget.selectedItem.count * widget.selectedItem.item.price;
     });
-
+    _sumStream(widget.selectedItem.item.price);
     if (widget.selectedItem.item.stock < widget.selectedItem.count) {
       //스낵바(toast) 메시지
       Scaffold.of(context).showSnackBar(SnackBar(
@@ -78,6 +84,7 @@ class _BasketTileState extends State<BasketTile> {
       widget.selectedItem.sumPrice =
           widget.selectedItem.item.price * widget.selectedItem.count;
     });
+    _sumStream(-widget.selectedItem.item.price);
     if (widget.selectedItem.count < 1) {
       print('정상');
       widget.removeMethod(widget);

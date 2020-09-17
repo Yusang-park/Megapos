@@ -9,6 +9,9 @@ import 'package:flutter_tts/flutter_tts.dart';
 
 import '../Model/SelectedItem.dart';
 
+StreamController<int> sumStream = StreamController(); //장바구니 총 합계 스트림
+
+
 class BasketScreen extends StatefulWidget {
   @override
   _BasketScreenState createState() => _BasketScreenState();
@@ -30,7 +33,17 @@ class _BasketScreenState extends State<BasketScreen> {
   @override
   void initState() {
     _tagStream();
+    _sumStream();
     super.initState();
+  }
+
+  void _sumStream(){
+    StreamSubscription streamSubscription = sumStream.stream.listen((data) {
+      setState(() {
+        _sumPrice = _sumPrice + data;
+      });
+
+    });
   }
 
   void _tagStream() {
@@ -75,6 +88,9 @@ class _BasketScreenState extends State<BasketScreen> {
               selectedItem: loadDB(itemNo),
               removeMethod: removeTile,
             ));
+//            for (int i = 0; i < _list.length; i++) {
+//              _sumPrice = ++_list[i].selectedItem.sumPrice;
+//            }
           });
         }
       }

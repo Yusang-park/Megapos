@@ -9,7 +9,7 @@ class ItemModel {
 
   ItemModel(String itemNo) {
     CollectionReference firebase =
-        FirebaseFirestore.instance.collection('Product');
+        FirebaseFirestore.instance.collection('Store').doc('0').collection('Product');
     this.itemNo = itemNo;
     firebase.doc(itemNo).get().then((DocumentSnapshot document) {
       this.name = document.data()['Name'];
