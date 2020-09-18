@@ -117,6 +117,7 @@ class _BasketScreenState extends State<BasketScreen> {
     _list.remove(removeTile);
     print('삭제함수작동');
 
+//TODO : exception 경고 포착되는데 문제 없는지 다같이 검토좀
     setState(() {
       _list.sort();
     });
@@ -215,47 +216,41 @@ class _BasketScreenState extends State<BasketScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  ButtonTheme(
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(50)),
-                      child: RaisedButton(
-                        onPressed: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (BuildContext context) =>
-                                      Payment()));
-                          //TODO : 결제부분 만들기.
-                        },
-                        child: Text('결제하기'),
-                      )),
-                  SizedBox(width: width * 0.05),
-                  ButtonTheme(
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(50)),
-                    child: RaisedButton(
-                      onPressed: () {
-                        showDialog(
-                            //Stateful Dialog 생성하기
-                            context: context,
-                            builder: (context) {
-                              return StatefulBuilder(builder:
-                                  (BuildContext context, StateSetter setState) {
-                                return ConfirmDialog(
-                                  bodyText: '정말 장바구니를 비울까요?\n다시 한번 확인해주세요.',
-                                );
-                              });
-                            }).then((value) {
-                          if (value == true) {
-                            resetBasket();
-                          }
-                        });
-                      },
-                      textColor: Colors.white,
-                      child: Text('장바구니 비우기'),
+                  RaisedButton(
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (BuildContext context) => Payment()));
+                      //TODO : 결제부분 만들기.
+                    },
+                    child: Text(
+                      '결제하기',
+                      style: TextStyle(color: Colors.white),
                     ),
                   ),
-                  FlatButton(
+                  SizedBox(width: width * 0.05),
+                  RaisedButton(
+                    onPressed: () {
+                      showDialog(
+                          //Stateful Dialog 생성하기
+                          context: context,
+                          builder: (context) {
+                            return StatefulBuilder(builder:
+                                (BuildContext context, StateSetter setState) {
+                              return ConfirmDialog(
+                                bodyText: '정말 장바구니를 비울까요?\n다시 한번 확인해주세요.',
+                              );
+                            });
+                          }).then((value) {
+                        if (value == true) {
+                          resetBasket();
+                        }
+                      });
+                    },
+                    child: Text('장바구니 비우기'),
+                  ),
+                  RaisedButton(
                     onPressed: () {
                       setState(() {
                         _list.add(BasketTile(
@@ -266,7 +261,7 @@ class _BasketScreenState extends State<BasketScreen> {
                       });
                     },
                     child: Text('가상NFC'),
-                  )
+                  ),
                 ],
               ),
               SizedBox(
