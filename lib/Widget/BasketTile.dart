@@ -31,7 +31,7 @@ class _BasketTileState extends State<BasketTile> {
     loadDB();
   }
 
-  void  _sumStream(int value){
+  void _sumStream(int value) {
     sumStream.sink.add(value);
   }
 

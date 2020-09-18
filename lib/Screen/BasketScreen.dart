@@ -4,12 +4,15 @@ import 'package:capstone/Model/SelectedItem.dart';
 import 'package:capstone/Model/payment.dart';
 import 'package:capstone/Widget/BasketTile.dart';
 import 'package:capstone/Widget/ConfirmDialog.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:nfc_in_flutter/nfc_in_flutter.dart';
 import 'package:flutter_tts/flutter_tts.dart';
+import '../Model/Item.dart';
 import '../Model/payment.dart';
 
 import '../Model/SelectedItem.dart';
+import '../Widget/BasketTile.dart';
 
 StreamController<int> sumStream = StreamController(); //장바구니 총 합계 스트림
 
@@ -35,7 +38,19 @@ class _BasketScreenState extends State<BasketScreen> {
   void initState() {
     _tagStream();
     _sumStream();
+    //fireload();
     super.initState();
+  }
+
+  void fireload() {
+    CollectionReference firebase = FirebaseFirestore.instance
+        .collection('Store')
+        .doc('0')
+        .collection('Product');
+
+    firebase.doc('1').get().then((DocumentSnapshot document) {
+      print(document.data()['Name']);
+    });
   }
 
   void _sumStream() {
@@ -99,9 +114,11 @@ class _BasketScreenState extends State<BasketScreen> {
 
   //delect tile
   void removeTile(BasketTile removeTile) {
+    _list.remove(removeTile);
+    print('삭제함수작동');
+
     setState(() {
-      _list.remove(removeTile);
-      print('삭제함수작동');
+      _list.sort();
     });
   }
 
@@ -238,6 +255,18 @@ class _BasketScreenState extends State<BasketScreen> {
                       child: Text('장바구니 비우기'),
                     ),
                   ),
+                  FlatButton(
+                    onPressed: () {
+                      setState(() {
+                        _list.add(BasketTile(
+                          itemNo: '1',
+                          removeMethod: removeTile,
+                          selectedItem: loadDB('1'),
+                        ));
+                      });
+                    },
+                    child: Text('가상NFC'),
+                  )
                 ],
               ),
               SizedBox(
