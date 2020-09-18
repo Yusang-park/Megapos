@@ -21,8 +21,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        primarySwatch: Colors.deepPurple, //버튼 색상 등이 변경됨
-        primaryColor: Colors.deepPurple,
+        primaryColor: Colors.black, //기본컬러이며 위젯들이 보색을 띄게 된다.
         textTheme: TextTheme(
           title: TextStyle(
               color: Colors.deepPurple,
@@ -34,7 +33,7 @@ class MyApp extends StatelessWidget {
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
           buttonColor: Colors.deepPurple,
-          textTheme: ButtonTextTheme.accent,
+          textTheme: ButtonTextTheme.primary,
         ),
       ),
       home: MyHomePage(),
