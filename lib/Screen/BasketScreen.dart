@@ -12,6 +12,7 @@ import '../Model/Item.dart';
 import '../Model/payment.dart';
 
 import '../Model/SelectedItem.dart';
+import '../Widget/BasketTile.dart';
 
 StreamController<int> sumStream = StreamController(); //장바구니 총 합계 스트림
 
@@ -113,9 +114,11 @@ class _BasketScreenState extends State<BasketScreen> {
 
   //delect tile
   void removeTile(BasketTile removeTile) {
+    _list.remove(removeTile);
+    print('삭제함수작동');
+
     setState(() {
-      _list.remove(removeTile);
-      print('삭제함수작동');
+      _list.sort();
     });
   }
 
@@ -254,16 +257,13 @@ class _BasketScreenState extends State<BasketScreen> {
                   ),
                   FlatButton(
                     onPressed: () {
-                      CollectionReference firebase = FirebaseFirestore.instance
-                          .collection('Store')
-                          .doc('0')
-                          .collection('Product');
-
-                      firebase.doc('1').get().then(
-                        (DocumentSnapshot document) {
-                          print(document.data()['Name']);
-                        },
-                      );
+                      setState(() {
+                        _list.add(BasketTile(
+                          itemNo: '1',
+                          removeMethod: removeTile,
+                          selectedItem: loadDB('1'),
+                        ));
+                      });
                     },
                     child: Text('가상NFC'),
                   )
