@@ -101,11 +101,7 @@ class _BasketScreenState extends State<BasketScreen> {
             _list.add(BasketTile(
               itemNo: itemNo,
               selectedItem: loadDB(itemNo),
-              removeMethod: removeTile,
             ));
-//            for (int i = 0; i < _list.length; i++) {
-//              _sumPrice = ++_list[i].selectedItem.sumPrice;
-//            }
           });
         }
       }
@@ -113,14 +109,13 @@ class _BasketScreenState extends State<BasketScreen> {
   }
 
   //delect tile
-  void removeTile(BasketTile removeTile) {
+  removeTile(BasketTile removeTile) {
     _list.remove(removeTile);
     print('삭제함수작동');
-
-//TODO : exception 경고 포착되는데 문제 없는지 다같이 검토좀
     setState(() {
       _list.sort();
     });
+    return true;
   }
 
 //reset Basket
@@ -255,7 +250,6 @@ class _BasketScreenState extends State<BasketScreen> {
                       setState(() {
                         _list.add(BasketTile(
                           itemNo: '1',
-                          removeMethod: removeTile,
                           selectedItem: loadDB('1'),
                         ));
                       });
