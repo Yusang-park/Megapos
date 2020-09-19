@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:capstone/Model/SelectedItem.dart';
 import 'package:capstone/Screen/BasketScreen.dart';
+import 'package:capstone/Widget/TTS.dart';
 import 'package:flutter/material.dart';
 import 'package:nfc_in_flutter/nfc_in_flutter.dart';
 
@@ -10,12 +11,10 @@ class BasketTile extends StatefulWidget {
     Key key,
     this.itemNo,
     this.selectedItem,
-    this.removeMethod,
   }) : super(key: key);
   final StreamController ctrl = StreamController();
   String itemNo;
   SelectedItem selectedItem;
-  Function removeMethod;
 
   @override
   _BasketTileState createState() => _BasketTileState();
@@ -26,23 +25,19 @@ class _BasketTileState extends State<BasketTile> {
 
   @override
   void initState() {
-    super.initState();
-    _tagStream(); //NFC 스트림
     loadDB();
-  }
-
-  void _sumStream(int value) {
-    sumStream.sink.add(value);
+    _tagStream(); //NFC 스트림
+    super.initState();
   }
 
   void _tagStream() {
     //Stream from BasketScreen, 상품 중복 태그시 처리 부분
     StreamSubscription subscription = widget.ctrl.stream.listen((data) {
-      increasCount();
+      changeCount(true);
     });
   }
 
-  void loadDB() {
+  void loadDB() async {
     //3초마다 DB로드가 완료되었는지 검사
     Timer.periodic(Duration(milliseconds: 3), (timer) {
       if (widget.selectedItem.item.name != null &&
@@ -51,44 +46,35 @@ class _BasketTileState extends State<BasketTile> {
         timer.cancel();
         //load된 DB를 화면에 갱신
         setState(() {
-          widget.selectedItem.sumPrice = widget.selectedItem.item.price;
-          _sumStream(widget.selectedItem.item.price);
+          changeCount(true);
           _isLoaded = true; //true면 화면 데이터가 DB데이터로 변경
         });
       }
     });
   }
 
-//TODO : 재고가 마이너스가 되어도 되는지 고민해보아야함.
-
-  void increasCount() {
-    setState(() {
-      widget.selectedItem.count++;
-      widget.selectedItem.sumPrice =
-          widget.selectedItem.count * widget.selectedItem.item.price;
-    });
-    _sumStream(widget.selectedItem.item.price);
-    if (widget.selectedItem.item.stock < widget.selectedItem.count) {
-      //스낵바(toast) 메시지
-      Scaffold.of(context).showSnackBar(SnackBar(
-        content: Text('현재 재고보다 많은 수량이 담겼습니다.\n구매할 수량을 확인해주세요.'),
-        //TODO : 안내사운드와 바코드 사운드를 출력해야함.
-      ));
-    }
-  }
-
-//TODO : 수량이 0이되면 위젯 삭제 -> stream 사용이 더 옳은지 고민해야함.
-  void decreasCount() {
-    setState(() {
-      widget.selectedItem.count--;
-      widget.selectedItem.sumPrice =
-          widget.selectedItem.item.price * widget.selectedItem.count;
-    });
-    _sumStream(-widget.selectedItem.item.price);
-    if (widget.selectedItem.count < 1) {
-      print('정상');
-      widget.removeMethod(widget);
-      dispose(); //close widet, 반드시 필요함.
+  void changeCount(bool value) {
+    //count +
+    if (value) {
+      setState(() {
+        widget.selectedItem.count++;
+        widget.selectedItem.sumPrice += widget.selectedItem.item.price;
+      });
+      changeStream.sink.add([widget.selectedItem.item.price, null]);
+      speak(widget.selectedItem.item.name + "한 개");
+    } else {
+      //count -
+      if (widget.selectedItem.count == 1) {
+        //remove tile
+        // dispose();
+        changeStream.sink.add([-widget.selectedItem.item.price, widget]);
+      } else {
+        setState(() {
+          widget.selectedItem.count--;
+          widget.selectedItem.sumPrice -= widget.selectedItem.item.price;
+        });
+        changeStream.sink.add([-widget.selectedItem.item.price, null]);
+      }
     }
   }
 
@@ -136,19 +122,18 @@ class _BasketTileState extends State<BasketTile> {
               padding: EdgeInsets.all(0),
               icon: Icon(Icons.indeterminate_check_box),
               onPressed: () {
-                decreasCount();
+                changeCount(false);
               },
             ),
             _isLoaded
                 ? Text(widget.selectedItem.count.toString())
                 : Text('    '),
             IconButton(
-              padding: EdgeInsets.all(0),
-              icon: Icon(Icons.add_box),
-              onPressed: () {
-                increasCount();
-              },
-            ),
+                padding: EdgeInsets.all(0),
+                icon: Icon(Icons.add_box),
+                onPressed: () {
+                  changeCount(true);
+                }),
             _isLoaded
                 ? Text(
                     widget.selectedItem.sumPrice.toString() + '원',

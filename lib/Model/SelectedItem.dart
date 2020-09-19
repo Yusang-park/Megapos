@@ -12,23 +12,23 @@ class SelectedItem {
 
   SelectedItem(String itemNo) {
     item = ItemModel(itemNo);
-    count = 1;
+    sumPrice = 0;
+    count = 0;
     print(item.itemNo + "번 아이템 클래스 생성");
   }
 
-  void plusCount(){
+  void plusCount() {
     int stock = item.stock;
-    if(stock > count) {
+    if (stock > count) {
       count++;
       sumPrice = stock * count;
     }
   }
 
-  void minusCount(){
-    if(count > 0) {
+  void minusCount() {
+    if (count > 0) {
       count--;
       sumPrice = item.price * count;
     }
   }
-
 }
