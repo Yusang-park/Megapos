@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:nfc_in_flutter/nfc_in_flutter.dart';
 
 import '../Model/payment.dart';
+import '../Screen/UserInfo.dart';
 
 import '../Model/SelectedItem.dart';
 import '../Widget/BasketTile.dart';
@@ -190,6 +191,24 @@ class _BasketScreenState extends State<BasketScreen> {
                         ));
                 },
               ),
+              //-------------------내정보 수정을 위해 임시로넣음 진수
+              Padding(
+                  padding: EdgeInsets.only(
+                      right: width * 0.05, bottom: height * 0.01),
+                  child: Align(
+                      alignment: Alignment.centerRight,
+                      child: FloatingActionButton(
+                        onPressed: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (BuildContext context) =>
+                                      UserInfo()));
+                        },
+                        child: Icon(Icons.person),
+                      )))
+              //---------------------------------------------
+              ,
               StreamBuilder(
                 stream: changeStream.stream,
                 builder: (context, snapshot) {

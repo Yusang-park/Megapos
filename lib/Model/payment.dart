@@ -15,7 +15,6 @@ class Payment extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Image.asset('assets/images/iamport-logo.png'),
               Container(
                 padding: EdgeInsets.fromLTRB(0.0, 30.0, 0.0, 0.0),
                 child: Text('잠시만 기다려주세요...', style: TextStyle(fontSize: 20.0)),
@@ -25,10 +24,11 @@ class Payment extends StatelessWidget {
         ),
       ),
       /* [필수입력] 가맹점 식별코드 */
-      userCode: 'imp40311677',
+      userCode: 'imp21490057', //iamport는 됨
       /* [필수입력] 결제 데이터 */
       data: PaymentData.fromJson({
-        'pg': 'html5_inicis', // PG사
+        'pg':
+            'kakaopay.INIpayTest', // PG사 이니시스 = html5_inicis, 카카오페이 = kakaopay.INIpayTest
         'payMethod': 'card', // 결제수단
         'name': '아임포트 결제데이터 분석', // 주문명
         'merchantUid': 'mid_${DateTime.now().millisecondsSinceEpoch}', // 주문번호
