@@ -6,10 +6,11 @@ class UserInfo extends StatefulWidget {
 }
 
 class _UserInfoState extends State<UserInfo> {
-  @override
-  void initiate() {
-    super.initState();
-  }
+  TextEditingController _searchController0 = TextEditingController();
+  TextEditingController _searchController1 = TextEditingController();
+  TextEditingController _searchController2 = TextEditingController();
+  TextEditingController _searchController3 = TextEditingController();
+  TextEditingController _searchController4 = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -21,159 +22,163 @@ class _UserInfoState extends State<UserInfo> {
     final statusBarHeight = MediaQuery.of(context).padding.top;
 
     return Scaffold(
-        body: Container(
-            color: Colors.white,
-            child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
+      body: Column(
+        children: [
+          SizedBox(
+            height: height * 0.03,
+          ),
+          Text(
+            '내 정보',
+            style: Theme.of(context).textTheme.title,
+          ),
+          Divider(
+            thickness: 2,
+          ),
+          SizedBox(
+            height: height * 0.03,
+          ),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: width * 0.05),
+            child: Column(children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Container(
-                      padding: EdgeInsets.only(
-                          top: statusBarHeight, left: horizontal),
-                      child: Text(
-                        '프로필',
-                        style: TextStyle(fontSize: 25, color: Colors.black),
-                      )),
-                  Divider(
-                    thickness: 1,
+                    child: Text('이름'),
+                    alignment: Alignment.center,
+                    width: width * 0.13,
                   ),
-                  Padding(
-                    padding: EdgeInsets.only(
-                        left: width * 0.1,
-                        right: width * 0.1,
-                        top: statusBarHeight),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              Text(
-                                '이름    ',
-                                style:
-                                    TextStyle(fontSize: 19, color: Colors.grey),
-                              ),
-                              Container(
-                                padding:
-                                    EdgeInsets.only(left: width * 0.1, top: 20),
-                                width: width * 0.6,
-                                height: height * 0.06,
-                                child: TextField(
-                                  controller: TextEditingController(),
-                                  decoration:
-                                      InputDecoration.collapsed(hintText: ""),
-                                ),
-                              ),
-                            ]),
-                        Divider(
-                          thickness: 1,
-                        ),
-                        Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              Text(
-                                '연락처',
-                                style:
-                                    TextStyle(fontSize: 19, color: Colors.grey),
-                              ),
-                              Container(
-                                padding:
-                                    EdgeInsets.only(left: width * 0.1, top: 20),
-                                width: width * 0.6,
-                                height: height * 0.06,
-                                child: TextField(
-                                  controller: TextEditingController(),
-                                  onChanged: (value) {},
-                                  decoration:
-                                      InputDecoration.collapsed(hintText: ""),
-                                ),
-                              ),
-                            ]),
-                        Divider(
-                          thickness: 1,
-                        ),
-                        Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              Text(
-                                '이메일',
-                                style:
-                                    TextStyle(fontSize: 19, color: Colors.grey),
-                              ),
-                              Container(
-                                padding:
-                                    EdgeInsets.only(left: width * 0.1, top: 20),
-                                width: width * 0.6,
-                                height: height * 0.06,
-                                child: TextField(
-                                  controller: TextEditingController(),
-                                  onChanged: (value) {},
-                                  decoration:
-                                      InputDecoration.collapsed(hintText: ""),
-                                ),
-                              ),
-                            ]),
-                        Divider(
-                          thickness: 1,
-                        ),
-                        Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              Text(
-                                '주소    ',
-                                style:
-                                    TextStyle(fontSize: 19, color: Colors.grey),
-                              ),
-                              Container(
-                                padding:
-                                    EdgeInsets.only(left: width * 0.1, top: 20),
-                                width: width * 0.6,
-                                height: height * 0.06,
-                                child: TextField(
-                                  controller: TextEditingController(),
-                                  onChanged: (value) {},
-                                  decoration:
-                                      InputDecoration.collapsed(hintText: ""),
-                                ),
-                              ),
-                            ]),
-                        Divider(
-                          thickness: 1,
-                        ),
-                        Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              Text(
-                                '우편번호',
-                                style:
-                                    TextStyle(fontSize: 19, color: Colors.grey),
-                              ),
-                              Container(
-                                padding: EdgeInsets.only(
-                                    left: width * 0.07, top: 20),
-                                width: width * 0.6,
-                                height: height * 0.06,
-                                child: TextField(
-                                  controller: TextEditingController(),
-                                  onChanged: (value) {},
-                                  decoration:
-                                      InputDecoration.collapsed(hintText: ""),
-                                ),
-                              ),
-                            ]),
-                        Divider(
-                          thickness: 1,
-                        ),
-                        Align(
-                            alignment: Alignment.centerRight,
-                            child: Padding(
-                              padding: EdgeInsets.only(bottom: 10),
-                              child: Text("ㅎㅎ"),
-                            )),
-                      ],
-                    ),
+                  SizedBox(
+                    width: width * 0.1,
                   ),
-                ])));
+                  Expanded(
+                      child: Container(
+                          child: TextField(
+                              controller: _searchController0,
+                              decoration: InputDecoration(
+                                border: InputBorder.none,
+                              )))),
+                ],
+              ),
+              Divider(
+                thickness: 1,
+              ),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    child: Text('연락처'),
+                    alignment: Alignment.center,
+                    width: width * 0.13,
+                  ),
+                  SizedBox(
+                    width: width * 0.1,
+                  ),
+                  Expanded(
+                      child: Container(
+                          child: TextField(
+                              controller: _searchController0,
+                              decoration: InputDecoration(
+                                border: InputBorder.none,
+                              )))),
+                ],
+              ),
+              Divider(
+                thickness: 1,
+              ),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    child: Text('이메일'),
+                    alignment: Alignment.center,
+                    width: width * 0.13,
+                  ),
+                  SizedBox(
+                    width: width * 0.1,
+                  ),
+                  Expanded(
+                      child: Container(
+                          child: TextField(
+                              controller: _searchController0,
+                              decoration: InputDecoration(
+                                border: InputBorder.none,
+                              )))),
+                ],
+              ),
+              Divider(
+                thickness: 1,
+              ),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    child: Text('주소'),
+                    alignment: Alignment.center,
+                    width: width * 0.13,
+                  ),
+                  SizedBox(
+                    width: width * 0.1,
+                  ),
+                  Expanded(
+                      child: Container(
+                          child: TextField(
+                              controller: _searchController0,
+                              decoration: InputDecoration(
+                                border: InputBorder.none,
+                              )))),
+                ],
+              ),
+              Divider(
+                thickness: 1,
+              ),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    child: Text('우편번호'),
+                    alignment: Alignment.center,
+                    width: width * 0.13,
+                  ),
+                  SizedBox(
+                    width: width * 0.1,
+                  ),
+                  Expanded(
+                      child: Container(
+                          child: TextField(
+                              controller: _searchController0,
+                              decoration: InputDecoration(
+                                border: InputBorder.none,
+                              )))),
+                ],
+              ),
+              Divider(
+                thickness: 1,
+              ),
+            ]),
+          ),
+          Spacer(
+            flex: 1,
+          ),
+          Divider(
+            thickness: 1,
+          ),
+          Padding(
+              padding: EdgeInsets.only(right: width * 0.03),
+              child: Align(
+                child: RaisedButton(
+                  onPressed: () {},
+                  child: Text('확인'),
+                ),
+                alignment: Alignment.centerRight,
+              ))
+        ],
+      ),
+    );
   }
 }
