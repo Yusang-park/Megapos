@@ -76,6 +76,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(body: BasketScreen());
+    return Scaffold(
+      body: BasketScreen(),
+      resizeToAvoidBottomInset: false, //키보드가 올라왔을때 화면이 안밀림
+    );
   }
 }
