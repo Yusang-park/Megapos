@@ -4,6 +4,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import 'ItemAdd.dart';
+
 class ItemManage extends StatefulWidget {
   @override
   _ItemManageState createState() => _ItemManageState();
@@ -62,11 +64,36 @@ class _ItemManageState extends State<ItemManage> {
                 ),
                 Divider(
                   thickness: 2,
+                ),
+                Container(
+                  margin: EdgeInsets.only(bottom: 10.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      Text("사진"),
+                      Text("이름"),
+                      Text("가격"),
+                      Text("재고량"),
+                    ],
+                  ),
                 )
               ],
             ),
           ),
-        ]));
+          Expanded(child: ItemList()),
+        ]),
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.add),
+        backgroundColor: Colors.deepPurple,
+        onPressed: (){
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (BuildContext context) =>
+                      ItemAdd()));
+        },
+      ),
+    );
   }
 }
 
@@ -77,6 +104,7 @@ class ItemList extends StatefulWidget {
 
 class _ItemListState extends State<ItemList> {
   List<Widget> list = [];
+  int itemNo = -1;
 
   @override
   Widget build(BuildContext context) {
@@ -87,37 +115,26 @@ class _ItemListState extends State<ItemList> {
         .doc('0')
         .collection('Product');
 
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        return ConstrainedBox(
-          constraints: BoxConstraints(minHeight: constraints.maxHeight),
-          child: Container(
-            margin: EdgeInsets.symmetric(horizontal: size.width * 0.05),
-            child: FutureBuilder(
-                future: firestore.get(),
-                builder: (BuildContext context,
-                    AsyncSnapshot<QuerySnapshot> snapshot) {
-                  if(snapshot.connectionState == ConnectionState.done) {
-                    int itemNo = -1;
-                    return ListView(
-                      children: snapshot.data.docs.map((DocumentSnapshot document) {
-                        itemNo++;
-                        return ItemTile(
-                          itemNo: itemNo.toString(),
-                          name: document.data()['Name'],
-                          price: document.data()['Price'],
-                          stock: document.data()['Stock'],
-                        );
-                      }).toList(),
-                    );
+    return FutureBuilder(
+        future: firestore.get(),
+        builder: (BuildContext context,
+            AsyncSnapshot<QuerySnapshot> snapshot) {
+          if(snapshot.connectionState == ConnectionState.done) {
+            return ListView(
+              children: snapshot.data.docs.map((DocumentSnapshot document) {
+                itemNo++;
+                return ItemTile(
+                  itemNo: itemNo.toString(),
+                  name: document.data()['Name'],
+                  price: document.data()['Price'],
+                  stock: document.data()['Stock'],
+                );
+              }).toList(),
+            );
 
-                  }else
-                    return Text("loading");
-                }),
-          ),
-        );
-      },
-    );
+          }else
+            return Text("loading");
+        });
   }
 }
 
@@ -145,6 +162,7 @@ class _ItemTileState extends State<ItemTile> {
     var size = MediaQuery.of(context).size;
 
     return Container(
+      margin: EdgeInsets.symmetric(vertical: 10.0),
       height: size.height * 0.1,
       width: size.width * 0.1,
       decoration: BoxDecoration(

@@ -186,7 +186,7 @@ class _ItemAddState extends State<ItemAdd> {
                     margin: EdgeInsets.symmetric(vertical: 15.0),
                     child: Text("상품 이미지")),
                 Container(
-                  //TODO: 제스처디텍터로 감싸기
+                  //TODO: 제스처디텍터로 감싸기 & 사진 업로드 방법 고민해보기
                   height: size.height * 0.4,
                   decoration: BoxDecoration(
                       border: Border.all(width: 1, color: Colors.black54),
@@ -210,8 +210,7 @@ class _ItemAddState extends State<ItemAdd> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    RaisedButton( 
-                      //TODO : DB업로드
+                    RaisedButton(
                       onPressed: () {
                         setState(() {
                           itemNo = controller[0].text;
@@ -233,8 +232,9 @@ class _ItemAddState extends State<ItemAdd> {
                         style: TextStyle(color: Colors.white),
                       ),
                     ),RaisedButton(
-                      //TODO : 이전페이지로
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
                       child: Text(
                         '취소',
                         style: TextStyle(color: Colors.white),
