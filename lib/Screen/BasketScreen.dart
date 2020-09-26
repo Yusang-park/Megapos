@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:capstone/Model/SelectedItem.dart';
 import 'package:capstone/Model/payment.dart';
+import 'package:capstone/Screen/SearchSubScreen.dart';
 import 'package:capstone/Widget/BasketTile.dart';
 import 'package:capstone/Widget/ConfirmDialog.dart';
 import 'package:capstone/Widget/TTS.dart';
@@ -17,6 +18,7 @@ import '../Widget/BasketTile.dart';
 
 StreamController<List<dynamic>> changeStream =
     StreamController.broadcast(); //타일의 내용이 변경되었을 때 사용
+SearchSubScreen searchSubScreen = SearchSubScreen();
 
 class BasketScreen extends StatefulWidget {
   @override
@@ -108,7 +110,7 @@ class _BasketScreenState extends State<BasketScreen> {
   void resetBasket() {
     _list.clear();
     _sumPrice = 0;
-    setState(() {});
+    // setState(() {}); 이거 안해도 되네.. 왜지
   }
 
   SelectedItem loadDB(itemNo) {
@@ -185,6 +187,10 @@ class _BasketScreenState extends State<BasketScreen> {
                             controller: _searchController,
                             decoration: InputDecoration.collapsed(
                                 hintText: "상품명을 검색하세요."),
+                            onChanged: (value) {
+                              searchSubScreen.searchResult(value);
+                              print('동작');
+                            },
                           ),
                           flex: 9,
                         ),
@@ -284,10 +290,7 @@ class _BasketScreenState extends State<BasketScreen> {
 
   Widget _listWidget() {
     return (_searchMode
-        ? Expanded(
-            child: Center(
-            child: Text('검색할 상품명을 입력하세요.'),
-          ))
+        ? SearchSubScreen()
         : (_list.isEmpty
             ? Expanded(
                 flex: 1,
