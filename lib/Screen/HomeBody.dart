@@ -27,7 +27,8 @@ class _HomeBodyState extends State<HomeBody> {
               Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (BuildContext context) => UserInfo()));
+                      builder: (BuildContext context) =>
+                          UserInfo("정성진", 'a', 'd', 'a', 'b')));
             },
             child: Text('내정보관리')),
         RaisedButton(
