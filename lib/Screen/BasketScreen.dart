@@ -8,6 +8,7 @@ import 'package:capstone/Widget/ConfirmDialog.dart';
 import 'package:capstone/Widget/TTS.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:nfc_in_flutter/nfc_in_flutter.dart';
 import 'package:keyboard_visibility/keyboard_visibility.dart';
 
@@ -188,19 +189,25 @@ class _BasketScreenState extends State<BasketScreen> {
                                 hintText: "상품명을 검색하세요."),
                             onChanged: (value) {
                               searchSubScreen.streamController.add(value);
+                              setState(() => this);
                             },
                           ),
                           flex: 9,
                         ),
-                        IconButton(
-                          icon: Icon(
-                            Icons.search,
-                          ),
-                          onPressed: () {
-                            //TODO : 리스트 뷰 스크린 필요
-                            _searchController.clear();
-                          },
-                        ),
+                        _searchController.text.isNotEmpty
+                            ? IconButton(
+                                icon: Icon(Icons.close_rounded),
+                                onPressed: () {
+                                  //TODO : 리스트 뷰 스크린 필요
+                                  setState(() {
+                                    _searchController.clear();
+                                    FocusScope.of(context)
+                                        .requestFocus(FocusNode());
+                                    LogicalKeyboardKey.close;
+                                  });
+                                },
+                              )
+                            : SizedBox()
                       ],
                     ),
                   ),
@@ -211,78 +218,9 @@ class _BasketScreenState extends State<BasketScreen> {
                       return _listWidget();
                     },
                   ),
-                  StreamBuilder(
-                    stream: changeStream.stream,
-                    builder: (context, snapshot) {
-                      return Padding(
-                        padding: EdgeInsets.only(right: width * 0.04),
-                        child: Align(
-                          alignment: Alignment.centerRight,
-                          child: Text(
-                            '결제 금액 :  $_sumPrice 원',
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                  Divider(
-                    thickness: 1,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      RaisedButton(
-                        onPressed: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (BuildContext context) =>
-                                      Payment()));
-                        },
-                        child: Text(
-                          '결제하기',
-                          style: TextStyle(color: Colors.white),
-                        ),
-                      ),
-                      SizedBox(width: width * 0.05),
-                      RaisedButton(
-                        onPressed: () {
-                          showDialog(
-                              //Stateful Dialog 생성하기
-                              context: context,
-                              builder: (context) {
-                                return StatefulBuilder(builder:
-                                    (BuildContext context,
-                                        StateSetter setState) {
-                                  return ConfirmDialog(
-                                    bodyText: '정말 장바구니를 비울까요?\n다시 한번 확인해주세요.',
-                                  );
-                                });
-                              }).then((value) {
-                            if (value == true) {
-                              resetBasket();
-                            }
-                          });
-                        },
-                        child: Text('장바구니 비우기'),
-                      ),
-                      RaisedButton(
-                        onPressed: () {
-                          setState(() {
-                            _list.add(BasketTile(
-                              itemNo: '1',
-                              selectedItem: loadDB('1'),
-                            ));
-                          });
-                        },
-                        child: Text('가상NFC'),
-                      ),
-                    ],
-                  ),
-                  SizedBox(
-                    height: height * 0.02,
-                  ),
+                  _searchMode || _searchController.value.text.isNotEmpty
+                      ? Container()
+                      : _bottomWidget(width, height)
                 ])));
   }
 
@@ -307,5 +245,82 @@ class _BasketScreenState extends State<BasketScreen> {
                       return _list[index];
                     }),
               ));
+  }
+
+  Widget _bottomWidget(width, height) {
+    return Column(
+      children: [
+        StreamBuilder(
+          stream: changeStream.stream,
+          builder: (context, snapshot) {
+            return Padding(
+              padding: EdgeInsets.only(right: width * 0.04),
+              child: Align(
+                alignment: Alignment.centerRight,
+                child: Text(
+                  '결제 금액 :  $_sumPrice 원',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+              ),
+            );
+          },
+        ),
+        Divider(
+          thickness: 1,
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            RaisedButton(
+              onPressed: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (BuildContext context) => Payment()));
+              },
+              child: Text(
+                '결제하기',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+            SizedBox(width: width * 0.05),
+            RaisedButton(
+              onPressed: () {
+                showDialog(
+                    //Stateful Dialog 생성하기
+                    context: context,
+                    builder: (context) {
+                      return StatefulBuilder(builder:
+                          (BuildContext context, StateSetter setState) {
+                        return ConfirmDialog(
+                          bodyText: '정말 장바구니를 비울까요?\n다시 한번 확인해주세요.',
+                        );
+                      });
+                    }).then((value) {
+                  if (value == true) {
+                    resetBasket();
+                  }
+                });
+              },
+              child: Text('장바구니 비우기'),
+            ),
+            RaisedButton(
+              onPressed: () {
+                setState(() {
+                  _list.add(BasketTile(
+                    itemNo: '1',
+                    selectedItem: loadDB('1'),
+                  ));
+                });
+              },
+              child: Text('가상NFC'),
+            ),
+          ],
+        ),
+        SizedBox(
+          height: height * 0.02,
+        ),
+      ],
+    );
   }
 }
