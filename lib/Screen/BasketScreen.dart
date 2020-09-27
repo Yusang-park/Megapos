@@ -18,7 +18,6 @@ import '../Widget/BasketTile.dart';
 
 StreamController<List<dynamic>> changeStream =
     StreamController.broadcast(); //타일의 내용이 변경되었을 때 사용
-SearchSubScreen searchSubScreen = SearchSubScreen();
 
 class BasketScreen extends StatefulWidget {
   @override
@@ -30,7 +29,7 @@ class _BasketScreenState extends State<BasketScreen> {
   List<BasketTile> _list = [];
   FocusNode _searchFocus = FocusNode();
   bool _searchMode = false;
-
+  SearchSubScreen searchSubScreen = SearchSubScreen();
   int _sumPrice = 0;
 
   @override
@@ -188,8 +187,7 @@ class _BasketScreenState extends State<BasketScreen> {
                             decoration: InputDecoration.collapsed(
                                 hintText: "상품명을 검색하세요."),
                             onChanged: (value) {
-                              searchSubScreen.searchResult(value);
-                              print('동작');
+                              searchSubScreen.streamController.add(value);
                             },
                           ),
                           flex: 9,
@@ -289,9 +287,9 @@ class _BasketScreenState extends State<BasketScreen> {
   }
 
   Widget _listWidget() {
-    return (_searchMode
-        ? SearchSubScreen()
-        : (_list.isEmpty
+    return (_searchMode || _searchController.value.text.isNotEmpty //키보드가 올라온 상태
+        ? searchSubScreen
+        : _list.isEmpty
             ? Expanded(
                 flex: 1,
                 child: Center(
@@ -308,6 +306,6 @@ class _BasketScreenState extends State<BasketScreen> {
                     itemBuilder: (BuildContext context, int index) {
                       return _list[index];
                     }),
-              )));
+              ));
   }
 }
