@@ -1,8 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 class UserInfo extends StatefulWidget {
   @override
   _UserInfoState createState() => _UserInfoState();
+
+  final String name;
+  final String phoneNum;
+  final String email;
+  final String addr;
+  final String postalCode;
+
+  UserInfo(this.name, this.phoneNum, this.email, this.addr, this.postalCode);
 }
 
 class _UserInfoState extends State<UserInfo> {
@@ -11,6 +21,41 @@ class _UserInfoState extends State<UserInfo> {
   TextEditingController _searchController2 = TextEditingController();
   TextEditingController _searchController3 = TextEditingController();
   TextEditingController _searchController4 = TextEditingController();
+  CollectionReference firestore = FirebaseFirestore.instance.collection('User');
+
+  String name;
+  String phoneNum;
+  String email;
+  String addr;
+  String postalCode;
+
+  @override
+  initState() {
+    name = widget.name;
+    phoneNum = widget.phoneNum;
+    email = widget.email;
+    addr = widget.addr;
+    postalCode = widget.postalCode;
+    _searchController0.text = name;
+    _searchController1.text = phoneNum;
+    _searchController2.text = email;
+    _searchController3.text = addr;
+    _searchController4.text = postalCode;
+  }
+
+  Future<void> updateUser() {
+    return firestore
+        .doc('0')
+        .set({
+          'Name': name,
+          'phoneNum': phoneNum,
+          'email': email,
+          'addr': addr,
+          'postalCode': postalCode
+        })
+        .then((value) => print("User Updated"))
+        .catchError((error) => print("Error"));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -55,6 +100,7 @@ class _UserInfoState extends State<UserInfo> {
                   Expanded(
                       child: Container(
                           child: TextField(
+                              onChanged: (String str) => (name = str),
                               controller: _searchController0,
                               decoration: InputDecoration(
                                 border: InputBorder.none,
@@ -79,7 +125,8 @@ class _UserInfoState extends State<UserInfo> {
                   Expanded(
                       child: Container(
                           child: TextField(
-                              controller: _searchController0,
+                              onChanged: (String str) => (phoneNum = str),
+                              controller: _searchController1,
                               decoration: InputDecoration(
                                 border: InputBorder.none,
                               )))),
@@ -103,7 +150,8 @@ class _UserInfoState extends State<UserInfo> {
                   Expanded(
                       child: Container(
                           child: TextField(
-                              controller: _searchController0,
+                              onChanged: (String str) => (email = str),
+                              controller: _searchController2,
                               decoration: InputDecoration(
                                 border: InputBorder.none,
                               )))),
@@ -127,7 +175,8 @@ class _UserInfoState extends State<UserInfo> {
                   Expanded(
                       child: Container(
                           child: TextField(
-                              controller: _searchController0,
+                              onChanged: (String str) => (addr = str),
+                              controller: _searchController3,
                               decoration: InputDecoration(
                                 border: InputBorder.none,
                               )))),
@@ -151,7 +200,8 @@ class _UserInfoState extends State<UserInfo> {
                   Expanded(
                       child: Container(
                           child: TextField(
-                              controller: _searchController0,
+                              onChanged: (String str) => (postalCode = str),
+                              controller: _searchController4,
                               decoration: InputDecoration(
                                 border: InputBorder.none,
                               )))),
@@ -172,7 +222,11 @@ class _UserInfoState extends State<UserInfo> {
               padding: EdgeInsets.only(right: width * 0.03),
               child: Align(
                 child: RaisedButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    updateUser();
+                    Navigator.pop(
+                        context, [name, phoneNum, email, addr, postalCode]);
+                  },
                   child: Text('확인'),
                 ),
                 alignment: Alignment.centerRight,
