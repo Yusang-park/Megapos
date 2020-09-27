@@ -147,81 +147,84 @@ class _BasketScreenState extends State<BasketScreen> {
     final horizontal = width * 0.02;
     final statusBarHeight = MediaQuery.of(context).padding.top;
 
-    return InkWell(
-        highlightColor: Colors.transparent, //모서리로 퍼져나가는 이펙트
+    return Scaffold(
+      resizeToAvoidBottomInset: false, //키보드가 올라왔을때 화면이 안밀림
+      body: InkWell(
+          highlightColor: Colors.transparent, //모서리로 퍼져나가는 이펙트
 
-        splashColor: Colors.transparent, //클릭시 원형 이펙트
-        onTap: () {
-          FocusScope.of(context)
-              .requestFocus(FocusNode()); //textfield의 포커스를 빼앗음
-        },
-        //제스처를 하기 위한 위젯
-        child: Padding(
-            padding: EdgeInsets.only(
-                left: horizontal, right: horizontal, top: statusBarHeight),
-            child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Container(
-                      child: Text(
-                    '매장명이 들어가는 텍스트',
-                    style: Theme.of(context).textTheme.title,
-                  )),
-                  Divider(
-                    thickness: 1,
-                  ),
-                  Container(
-                    padding: EdgeInsets.only(left: width * 0.05),
-                    margin: EdgeInsets.only(bottom: height * 0.01),
-                    width: width * 0.85,
-                    height: height * 0.06,
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(50),
-                        color: Colors.black12),
-                    child: Row(
-                      children: [
-                        Flexible(
-                          child: TextField(
-                            focusNode: _searchFocus,
-                            controller: _searchController,
-                            decoration: InputDecoration.collapsed(
-                                hintText: "상품명을 검색하세요."),
-                            onChanged: (value) {
-                              searchSubScreen.streamController.add(value);
-                              setState(() => this);
-                            },
-                          ),
-                          flex: 9,
-                        ),
-                        _searchController.text.isNotEmpty
-                            ? IconButton(
-                                icon: Icon(Icons.close_rounded),
-                                onPressed: () {
-                                  //TODO : 리스트 뷰 스크린 필요
-                                  setState(() {
-                                    _searchController.clear();
-                                    FocusScope.of(context)
-                                        .requestFocus(FocusNode());
-                                    LogicalKeyboardKey.close;
-                                  });
-                                },
-                              )
-                            : SizedBox()
-                      ],
+          splashColor: Colors.transparent, //클릭시 원형 이펙트
+          onTap: () {
+            FocusScope.of(context)
+                .requestFocus(FocusNode()); //textfield의 포커스를 빼앗음
+          },
+          //제스처를 하기 위한 위젯
+          child: Padding(
+              padding: EdgeInsets.only(
+                  left: horizontal, right: horizontal, top: statusBarHeight),
+              child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Container(
+                        child: Text(
+                      '매장명이 들어가는 텍스트',
+                      style: Theme.of(context).textTheme.title,
+                    )),
+                    Divider(
+                      thickness: 1,
                     ),
-                  ),
-                  Divider(),
-                  StreamBuilder(
-                    stream: changeStream.stream,
-                    builder: (context, snapshot) {
-                      return _listWidget();
-                    },
-                  ),
-                  _searchMode || _searchController.value.text.isNotEmpty
-                      ? Container()
-                      : _bottomWidget(width, height)
-                ])));
+                    Container(
+                      padding: EdgeInsets.only(left: width * 0.05),
+                      margin: EdgeInsets.only(bottom: height * 0.01),
+                      width: width * 0.85,
+                      height: height * 0.06,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(50),
+                          color: Colors.black12),
+                      child: Row(
+                        children: [
+                          Flexible(
+                            child: TextField(
+                              focusNode: _searchFocus,
+                              controller: _searchController,
+                              decoration: InputDecoration.collapsed(
+                                  hintText: "상품명을 검색하세요."),
+                              onChanged: (value) {
+                                searchSubScreen.streamController.add(value);
+                                setState(() => this);
+                              },
+                            ),
+                            flex: 9,
+                          ),
+                          _searchController.text.isNotEmpty
+                              ? IconButton(
+                                  icon: Icon(Icons.close_rounded),
+                                  onPressed: () {
+                                    //TODO : 리스트 뷰 스크린 필요
+                                    setState(() {
+                                      _searchController.clear();
+                                      FocusScope.of(context)
+                                          .requestFocus(FocusNode());
+                                      LogicalKeyboardKey.close;
+                                    });
+                                  },
+                                )
+                              : SizedBox()
+                        ],
+                      ),
+                    ),
+                    Divider(),
+                    StreamBuilder(
+                      stream: changeStream.stream,
+                      builder: (context, snapshot) {
+                        return _listWidget();
+                      },
+                    ),
+                    _searchMode || _searchController.value.text.isNotEmpty
+                        ? Container()
+                        : _bottomWidget(width, height)
+                  ]))),
+    );
   }
 
   Widget _listWidget() {

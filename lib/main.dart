@@ -7,6 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:nfc_in_flutter/nfc_in_flutter.dart';
 
+import 'Screen/HomeScreen.dart';
+
 void main() {
   SystemChrome.setSystemUIOverlayStyle(
       SystemUiOverlayStyle(statusBarColor: Color(0xFFF9F9F9)));
@@ -76,9 +78,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: BasketScreen(),
-      resizeToAvoidBottomInset: false, //키보드가 올라왔을때 화면이 안밀림
-    );
+    return HomeScreen();
   }
 }
