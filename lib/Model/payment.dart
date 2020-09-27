@@ -4,8 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:iamport_flutter/iamport_payment.dart';
 /* 아임포트 결제 데이터 모델을 불러옵니다. */
 import 'package:iamport_flutter/model/payment_data.dart';
+import '../Screen/UserInfo.dart';
 
 class Payment extends StatelessWidget {
+  final UserInfo userInfo;
+  final int sumPrice;
+  final String name;
+  Payment(this.userInfo, this.sumPrice, this.name);
+
   @override
   Widget build(BuildContext context) {
     return IamportPayment(
@@ -30,14 +36,14 @@ class Payment extends StatelessWidget {
         'pg':
             'kakaopay.INIpayTest', // PG사 이니시스 = html5_inicis, 카카오페이 = kakaopay.INIpayTest
         'payMethod': 'card', // 결제수단
-        'name': '아임포트 결제데이터 분석', // 주문명
+        'name': name, // 주문명
         'merchantUid': 'mid_${DateTime.now().millisecondsSinceEpoch}', // 주문번호
-        'amount': 1, // 결제금액
-        'buyerName': '홍길동', // 구매자 이름
-        'buyerTel': '01012345678', // 구매자 연락처
-        'buyerEmail': 'example@naver.com', // 구매자 이메일
-        'buyerAddr': '서울시 강남구 신사동 661-16', // 구매자 주소
-        'buyerPostcode': '06018', // 구매자 우편번호
+        'amount': sumPrice, // 결제금액
+        'buyerName': userInfo.name, // 구매자 이름
+        'buyerTel': userInfo.phoneNum, // 구매자 연락처
+        'buyerEmail': userInfo.email, // 구매자 이메일
+        'buyerAddr': userInfo.addr, // 구매자 주소
+        'buyerPostcode': userInfo.postCode, // 구매자 우편번호
         'appScheme': 'example', // 앱 URL scheme
         'display': {
           'cardQuota': [2, 3] //결제창 UI 내 할부개월수 제한

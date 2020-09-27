@@ -10,9 +10,9 @@ class UserInfo extends StatefulWidget {
   final String phoneNum;
   final String email;
   final String addr;
-  final String postalCode;
+  final String postCode;
 
-  UserInfo(this.name, this.phoneNum, this.email, this.addr, this.postalCode);
+  UserInfo(this.name, this.phoneNum, this.email, this.addr, this.postCode);
 }
 
 class _UserInfoState extends State<UserInfo> {
@@ -27,7 +27,7 @@ class _UserInfoState extends State<UserInfo> {
   String phoneNum;
   String email;
   String addr;
-  String postalCode;
+  String postCode;
 
   @override
   initState() {
@@ -35,12 +35,12 @@ class _UserInfoState extends State<UserInfo> {
     phoneNum = widget.phoneNum;
     email = widget.email;
     addr = widget.addr;
-    postalCode = widget.postalCode;
+    postCode = widget.postCode;
     _searchController0.text = name;
     _searchController1.text = phoneNum;
     _searchController2.text = email;
     _searchController3.text = addr;
-    _searchController4.text = postalCode;
+    _searchController4.text = postCode;
   }
 
   Future<void> updateUser() {
@@ -51,7 +51,7 @@ class _UserInfoState extends State<UserInfo> {
           'phoneNum': phoneNum,
           'email': email,
           'addr': addr,
-          'postalCode': postalCode
+          'postCode': postCode
         })
         .then((value) => print("User Updated"))
         .catchError((error) => print("Error"));
@@ -200,7 +200,7 @@ class _UserInfoState extends State<UserInfo> {
                   Expanded(
                       child: Container(
                           child: TextField(
-                              onChanged: (String str) => (postalCode = str),
+                              onChanged: (String str) => (postCode = str),
                               controller: _searchController4,
                               decoration: InputDecoration(
                                 border: InputBorder.none,
@@ -225,7 +225,7 @@ class _UserInfoState extends State<UserInfo> {
                   onPressed: () {
                     updateUser();
                     Navigator.pop(
-                        context, [name, phoneNum, email, addr, postalCode]);
+                        context, [name, phoneNum, email, addr, postCode]);
                   },
                   child: Text('확인'),
                 ),
