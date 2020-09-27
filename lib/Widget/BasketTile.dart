@@ -105,8 +105,14 @@ class _BasketTileState extends State<BasketTile> {
                     decoration: BoxDecoration(
                         border: Border.all(color: Colors.black12, width: 3)),
                     child: Image.asset(
-                      widget.selectedItem.item.image, //★이미지가 assets과 연동되도록 변경요망
+                      widget.selectedItem.item.image,
                       height: height * 0.07,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Image.asset(
+                          'assets/images/1.jpg',
+                          height: height * 0.07,
+                        ); //TODO: 에러 이미지로 변경해야함
+                      },
                     ))
                 : CircleAvatar(
                     radius: 1,
