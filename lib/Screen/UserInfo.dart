@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 class UserInfo extends StatefulWidget {
   @override
   _UserInfoState createState() => _UserInfoState();
+  int a;
 }
 
 class _UserInfoState extends State<UserInfo> {
