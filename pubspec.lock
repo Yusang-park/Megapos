@@ -146,6 +146,15 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_nfc_plugin:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: master
+      resolved-ref: "5bcbed918cc3deb20889856b436b82a128374553"
+      url: "git://github.com/dukhanov/flutter-nfc-plugin.git"
+    source: git
+    version: "0.0.6"
   flutter_test:
     dependency: "direct dev"
     description: flutter

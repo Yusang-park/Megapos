@@ -30,7 +30,10 @@ dependencies:
   flutter_tts: ^1.2.7
   iamport_flutter: ^0.9.12
   keyboard_visibility:
-
+  flutter_nfc_plugin:
+    git:
+      url: git://github.com/dukhanov/flutter-nfc-plugin.git
+      ref: master
 
 
     
