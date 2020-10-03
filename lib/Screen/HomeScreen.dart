@@ -4,6 +4,8 @@ import 'package:capstone/Screen/MypageBody.dart';
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatefulWidget {
+  HomeScreen({this.nfcMessage});
+  final nfcMessage;
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
@@ -29,6 +31,10 @@ class _HomeScreenState extends State<HomeScreen> {
     final statusBarHeight = MediaQuery.of(context).padding.top;
 
     return Scaffold(
+      appBar: AppBar(
+        title: Text(widget.nfcMessage.toString()),
+        backgroundColor: Colors.deepPurple,
+      ),
       body: Padding(
         child: bodyWidget[_selectedIndex],
         padding: EdgeInsets.only(top: statusBarHeight),

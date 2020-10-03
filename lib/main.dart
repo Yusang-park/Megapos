@@ -104,8 +104,9 @@ class _MyAppState extends State<MyApp> {
 
   @override
   void initState() {
-    initializeFlutterFire(); //파이어베이스 초기화
     initPlatformState();
+    initializeFlutterFire(); //파이어베이스 초기화
+
     super.initState();
   }
 
@@ -128,6 +129,8 @@ class _MyAppState extends State<MyApp> {
             textTheme: ButtonTextTheme.primary,
           ),
         ),
-        home: HomeScreen());
+        home: HomeScreen(
+          nfcMessage: nfcMessageStartedWith?.payload,
+        ));
   }
 }
