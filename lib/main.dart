@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:capstone/Model/payment.dart';
+import 'package:capstone/Screen/BasketScreen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -29,6 +31,7 @@ class _MyAppState extends State<MyApp> {
   String nfcId = '';
 //=============================
   NfcMessage nfcMessageStartedWith;
+  bool withNfcMode = false;
 
   NfcPlugin nfcPlugin = NfcPlugin();
   StreamSubscription<NfcEvent> _nfcMesageSubscription;
@@ -69,6 +72,7 @@ class _MyAppState extends State<MyApp> {
       if (_nfcEventStartedWith != null) {
         setState(() {
           nfcMessageStartedWith = _nfcEventStartedWith.message;
+          withNfcMode = true;
         });
       }
     } on PlatformException {
@@ -104,9 +108,8 @@ class _MyAppState extends State<MyApp> {
 
   @override
   void initState() {
-    initPlatformState();
     initializeFlutterFire(); //파이어베이스 초기화
-
+    initPlatformState();
     super.initState();
   }
 
@@ -129,8 +132,12 @@ class _MyAppState extends State<MyApp> {
             textTheme: ButtonTextTheme.primary,
           ),
         ),
-        home: HomeScreen(
-          nfcMessage: nfcMessageStartedWith?.payload,
-        ));
+        home: withNfcMode
+            ? BasketScreen(
+                nfcMessageStartedWith: nfcMessageStartedWith?.payload,
+              )
+            : HomeScreen(
+                nfcMessage: nfcMessageStartedWith?.payload,
+              ));
   }
 }
