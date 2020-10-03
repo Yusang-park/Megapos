@@ -72,7 +72,7 @@ class _MyAppState extends State<MyApp> {
       if (_nfcEventStartedWith != null) {
         setState(() {
           nfcMessageStartedWith = _nfcEventStartedWith.message;
-          withNfcMode = true;
+          if (nfcMessageStartedWith.payload.length > 1) withNfcMode = true;
         });
       }
     } on PlatformException {
