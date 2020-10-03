@@ -22,7 +22,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     List<Widget> bodyWidget = [
-      HomeBody(widget.nfcMessage),
+      HomeBody(['1', '2']),
       CartBody(),
       MypageBody()
     ];

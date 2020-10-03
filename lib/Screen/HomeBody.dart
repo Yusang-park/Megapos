@@ -20,7 +20,9 @@ class _HomeBodyState extends State<HomeBody> {
             onPressed: () {
               Navigator.push(context, MaterialPageRoute(
                 builder: (context) {
-                  return BasketScreen();
+                  return BasketScreen(
+                    nfcMessageStartedWith: widget.nfcMessage,
+                  );
                 },
               ));
             },
