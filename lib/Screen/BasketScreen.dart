@@ -21,6 +21,8 @@ StreamController<List<dynamic>> changeStream =
     StreamController.broadcast(); //타일의 내용이 변경되었을 때 사용
 
 class BasketScreen extends StatefulWidget {
+  BasketScreen({this.nfcMessageStartedWith});
+  List<String> nfcMessageStartedWith;
   @override
   _BasketScreenState createState() => _BasketScreenState();
 }
@@ -166,10 +168,15 @@ class _BasketScreenState extends State<BasketScreen> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Container(
-                        child: Text(
-                      '매장명이 들어가는 텍스트',
-                      style: Theme.of(context).textTheme.title,
-                    )),
+                        child: widget.nfcMessageStartedWith.length > 1
+                            ? Text(
+                                widget.nfcMessageStartedWith[1].toString(),
+                                style: Theme.of(context).textTheme.title,
+                              )
+                            : Text(
+                                widget.nfcMessageStartedWith.toString(),
+                                style: Theme.of(context).textTheme.title,
+                              )),
                     Divider(
                       thickness: 1,
                     ),

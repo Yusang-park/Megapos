@@ -10,7 +10,7 @@ class Payment extends StatelessWidget {
   final UserInfo userInfo;
   final int sumPrice;
   final String name;
-  Payment(this.userInfo, this.sumPrice, this.name);
+  Payment({this.userInfo, this.sumPrice, this.name});
 
   @override
   Widget build(BuildContext context) {

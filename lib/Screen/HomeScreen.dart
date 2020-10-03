@@ -4,13 +4,13 @@ import 'package:capstone/Screen/MypageBody.dart';
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatefulWidget {
+  HomeScreen({this.nfcMessage});
+  final nfcMessage;
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  List<Widget> bodyWidget = [HomeBody(), CartBody(), MypageBody()];
-
   int _selectedIndex = 0;
 
   void _onItemTapped(int index) {
@@ -21,6 +21,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    List<Widget> bodyWidget = [
+      HomeBody(['1', '2']),
+      CartBody(),
+      MypageBody()
+    ];
     final size = MediaQuery.of(context).size;
     final width = size.width;
     final height = size.height;
@@ -29,6 +34,10 @@ class _HomeScreenState extends State<HomeScreen> {
     final statusBarHeight = MediaQuery.of(context).padding.top;
 
     return Scaffold(
+      appBar: AppBar(
+        title: Text(widget.nfcMessage.toString()),
+        backgroundColor: Colors.deepPurple,
+      ),
       body: Padding(
         child: bodyWidget[_selectedIndex],
         padding: EdgeInsets.only(top: statusBarHeight),

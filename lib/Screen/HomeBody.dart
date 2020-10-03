@@ -4,6 +4,9 @@ import 'package:capstone/Screen/UserInfo.dart';
 import 'package:flutter/material.dart';
 
 class HomeBody extends StatefulWidget {
+  HomeBody(this.nfcMessage);
+  final nfcMessage;
+
   @override
   _HomeBodyState createState() => _HomeBodyState();
 }
@@ -17,7 +20,9 @@ class _HomeBodyState extends State<HomeBody> {
             onPressed: () {
               Navigator.push(context, MaterialPageRoute(
                 builder: (context) {
-                  return BasketScreen();
+                  return BasketScreen(
+                    nfcMessageStartedWith: widget.nfcMessage,
+                  );
                 },
               ));
             },
