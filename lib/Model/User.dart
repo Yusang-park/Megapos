@@ -8,6 +8,8 @@ class UserModel {
   String addr;
   String postCode;
 
+  UserModel.noArgument();
+
   UserModel(String userNo) {
     CollectionReference firebase =
         FirebaseFirestore.instance.collection('User');
