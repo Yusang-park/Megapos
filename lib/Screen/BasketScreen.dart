@@ -32,7 +32,7 @@ class _BasketScreenState extends State<BasketScreen> {
   List<BasketTile> _list = [];
   FocusNode _searchFocus = FocusNode();
   bool _searchMode = false;
-  SearchSubScreen searchSubScreen = SearchSubScreen();
+  SearchSubScreen searchSubScreen;
   int _sumPrice = 0;
   String marketName = '';
 
@@ -54,6 +54,10 @@ class _BasketScreenState extends State<BasketScreen> {
       setState(() {
         marketName = document.data()['Name'];
         print('매장명 : ' + marketName);
+        searchSubScreen = SearchSubScreen(
+          marketNo: widget.marketNo,
+        );
+        speak('환영합니다 ' + marketName + '입니다');
       });
     });
   }
@@ -195,7 +199,8 @@ class _BasketScreenState extends State<BasketScreen> {
                               decoration: InputDecoration.collapsed(
                                   hintText: "상품명을 검색하세요."),
                               onChanged: (value) {
-                                searchSubScreen.streamController.add(value);
+                                searchSubScreen.streamController
+                                    .add(_searchController.text);
                                 setState(() => this);
                               },
                             ),

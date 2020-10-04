@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:capstone/Model/payment.dart';
 import 'package:capstone/Screen/BasketScreen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
