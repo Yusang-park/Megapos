@@ -21,8 +21,8 @@ StreamController<List<dynamic>> changeStream =
     StreamController.broadcast(); //타일의 내용이 변경되었을 때 사용
 
 class BasketScreen extends StatefulWidget {
-  BasketScreen({this.nfcMessageStartedWith});
-  List<String> nfcMessageStartedWith;
+  BasketScreen({this.marketNo});
+  String marketNo = 'null';
   @override
   _BasketScreenState createState() => _BasketScreenState();
 }
@@ -34,9 +34,11 @@ class _BasketScreenState extends State<BasketScreen> {
   bool _searchMode = false;
   SearchSubScreen searchSubScreen = SearchSubScreen();
   int _sumPrice = 0;
+  String marketName = '';
 
   @override
   void initState() {
+    _marketload();
     _tagStream();
     _changeStream();
     _focusListen();
@@ -44,14 +46,15 @@ class _BasketScreenState extends State<BasketScreen> {
     super.initState();
   }
 
-  void fireload() {
-    CollectionReference firebase = FirebaseFirestore.instance
-        .collection('Store')
-        .doc('0')
-        .collection('Product');
+  void _marketload() {
+    CollectionReference firebase =
+        FirebaseFirestore.instance.collection('Store');
 
-    firebase.doc('1').get().then((DocumentSnapshot document) {
-      print(document.data()['Name']);
+    firebase.doc(widget.marketNo).get().then((DocumentSnapshot document) {
+      setState(() {
+        marketName = document.data()['Name'];
+        print('매장명 : ' + marketName);
+      });
     });
   }
 
@@ -75,14 +78,14 @@ class _BasketScreenState extends State<BasketScreen> {
       throwOnUserCancel: false,
     )
         .listen((NDEFMessage message) {
-      itemNo = message.payload.toString();
+      itemNo = message.payload.toString().split("itemNo:")[1];
 //NFC 끝
       bool _trigger = false;
       print('상품번호 : ' + itemNo);
 
       if (itemNo == "null") {
         //태그 오류로 상품번호가 Null이면 처리하는 부분
-
+        //TODO:스낵바가 작동안함
         Scaffold.of(context)
             .showSnackBar(SnackBar(content: Text("가격표에 다시 한번 태그해주세요!")));
         speak("가격표에 다시 한번 태그해주세요");
@@ -100,7 +103,7 @@ class _BasketScreenState extends State<BasketScreen> {
           setState(() {
             _list.add(BasketTile(
               itemNo: itemNo,
-              selectedItem: loadDB(itemNo),
+              selectedItem: loadDB(itemNo, widget.marketNo),
             ));
           });
         }
@@ -115,8 +118,8 @@ class _BasketScreenState extends State<BasketScreen> {
     // setState(() {}); 이거 안해도 되네.. 왜지
   }
 
-  SelectedItem loadDB(itemNo) {
-    return SelectedItem(itemNo);
+  SelectedItem loadDB(itemNo, marketNo) {
+    return SelectedItem(itemNo, marketNo);
   }
 
   _focusListen() {
@@ -168,15 +171,10 @@ class _BasketScreenState extends State<BasketScreen> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Container(
-                        child: widget.nfcMessageStartedWith.length > 1
-                            ? Text(
-                                widget.nfcMessageStartedWith[1].toString(),
-                                style: Theme.of(context).textTheme.title,
-                              )
-                            : Text(
-                                widget.nfcMessageStartedWith.toString(),
-                                style: Theme.of(context).textTheme.title,
-                              )),
+                        child: Text(
+                      marketName,
+                      style: Theme.of(context).textTheme.title,
+                    )),
                     Divider(
                       thickness: 1,
                     ),
@@ -319,7 +317,7 @@ class _BasketScreenState extends State<BasketScreen> {
                 setState(() {
                   _list.add(BasketTile(
                     itemNo: '1',
-                    selectedItem: loadDB('1'),
+                    selectedItem: loadDB('1', widget.marketNo),
                   ));
                 });
               },

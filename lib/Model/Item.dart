@@ -7,9 +7,11 @@ class ItemModel {
   int stock;
   String image;
 
-  ItemModel(String itemNo) {
-    CollectionReference firebase =
-        FirebaseFirestore.instance.collection('Store').doc('0').collection('Product');
+  ItemModel(String itemNo, String marketNo) {
+    CollectionReference firebase = FirebaseFirestore.instance
+        .collection('Store')
+        .doc(marketNo)
+        .collection('Product');
     this.itemNo = itemNo;
     firebase.doc(itemNo).get().then((DocumentSnapshot document) {
       this.name = document.data()['Name'];
