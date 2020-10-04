@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class SearchSubScreen extends StatefulWidget {
+  SearchSubScreen({this.marketNo});
+  final marketNo;
   @override
   _SearchSubScreenState createState() => _SearchSubScreenState();
   final StreamController<String> streamController =
@@ -24,15 +26,15 @@ class _SearchSubScreenState extends State<SearchSubScreen> {
 
   _reloadStream() {
     widget.streamSubscription = widget.streamController.stream.listen((data) {
-      if (data == null) {
-        setState(() {
-          list.clear();
-        });
+      list.clear();
+      if (data == "") {
+        list.clear();
+        setState(() {});
       } else {
         list.clear();
         CollectionReference firebase = FirebaseFirestore.instance
             .collection('Store')
-            .doc('0')
+            .doc(widget.marketNo)
             .collection('Product');
 
         firebase.where('Keyword', arrayContains: data).get().then((value) => {

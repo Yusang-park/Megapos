@@ -4,9 +4,6 @@ import 'package:capstone/Screen/UserInfo.dart';
 import 'package:flutter/material.dart';
 
 class HomeBody extends StatefulWidget {
-  HomeBody(this.nfcMessage);
-  final nfcMessage;
-
   @override
   _HomeBodyState createState() => _HomeBodyState();
 }

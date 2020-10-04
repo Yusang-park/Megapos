@@ -21,11 +21,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    List<Widget> bodyWidget = [
-      HomeBody(['1', '2']),
-      CartBody(),
-      MypageBody()
-    ];
+    List<Widget> bodyWidget = [HomeBody(), CartBody(), MypageBody()];
     final size = MediaQuery.of(context).size;
     final width = size.width;
     final height = size.height;
