@@ -1,3 +1,4 @@
+import 'package:capstone/Model/User.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -5,14 +6,9 @@ import 'package:firebase_core/firebase_core.dart';
 class UserInfo extends StatefulWidget {
   @override
   _UserInfoState createState() => _UserInfoState();
+  final UserModel userModel;
 
-  final String name;
-  final String phoneNum;
-  final String email;
-  final String addr;
-  final String postCode;
-
-  UserInfo(this.name, this.phoneNum, this.email, this.addr, this.postCode);
+  UserInfo(this.userModel);
 }
 
 class _UserInfoState extends State<UserInfo> {
@@ -31,11 +27,11 @@ class _UserInfoState extends State<UserInfo> {
 
   @override
   initState() {
-    name = widget.name;
-    phoneNum = widget.phoneNum;
-    email = widget.email;
-    addr = widget.addr;
-    postCode = widget.postCode;
+    name = widget.userModel.name;
+    phoneNum = widget.userModel.phoneNum;
+    email = widget.userModel.email;
+    addr = widget.userModel.addr;
+    postCode = widget.userModel.postCode;
     _searchController0.text = name;
     _searchController1.text = phoneNum;
     _searchController2.text = email;
