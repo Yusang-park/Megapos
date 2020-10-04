@@ -29,6 +29,7 @@ class _MyAppState extends State<MyApp> {
   String nfcMessage = '';
   String nfcTechList = '';
   String nfcId = '';
+  String nfcMarketNo = 'null';
 //=============================
   NfcMessage nfcMessageStartedWith;
   bool withNfcMode = false;
@@ -72,7 +73,8 @@ class _MyAppState extends State<MyApp> {
       if (_nfcEventStartedWith != null) {
         setState(() {
           nfcMessageStartedWith = _nfcEventStartedWith.message;
-          if (nfcMessageStartedWith.payload.length > 1) withNfcMode = true;
+          nfcMarketNo = nfcMessageStartedWith.payload[0].split('marketNo:')[1];
+          if (nfcMarketNo != 'null') withNfcMode = true;
         });
       }
     } on PlatformException {
@@ -134,7 +136,7 @@ class _MyAppState extends State<MyApp> {
         ),
         home: withNfcMode
             ? BasketScreen(
-                nfcMessageStartedWith: nfcMessageStartedWith?.payload,
+                marketNo: nfcMarketNo,
               )
             : HomeScreen(
                 nfcMessage: nfcMessageStartedWith?.payload,

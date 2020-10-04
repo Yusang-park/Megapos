@@ -10,8 +10,8 @@ class SelectedItem {
   int count;
   int sumPrice;
 
-  SelectedItem(String itemNo) {
-    item = ItemModel(itemNo);
+  SelectedItem(String itemNo, String marketNo) {
+    item = ItemModel(itemNo, marketNo);
     sumPrice = 0;
     count = 0;
     print(item.itemNo + "번 아이템 클래스 생성");
