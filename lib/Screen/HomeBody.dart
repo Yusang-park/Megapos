@@ -1,3 +1,4 @@
+import 'package:capstone/Model/User.dart';
 import 'package:capstone/Screen/BasketScreen.dart';
 import 'package:capstone/Screen/ItemManage.dart';
 import 'package:capstone/Screen/UserInfo.dart';
@@ -30,7 +31,7 @@ class _HomeBodyState extends State<HomeBody> {
                   context,
                   MaterialPageRoute(
                       builder: (BuildContext context) =>
-                          UserInfo("정성진", 'a', 'd', 'a', 'b')));
+                          UserInfo(UserModel("0"))));
             },
             child: Text('내정보관리')),
         RaisedButton(
