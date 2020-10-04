@@ -48,7 +48,7 @@ class _SearchSubScreenState extends State<SearchSubScreen> {
                 print(map['Price']);
                 print(map['Stock']);
                 print(map['Image']);
-
+                list.remove(map);
                 list.add(map);
               }),
               setState(() {})
