@@ -5,15 +5,14 @@ import 'package:flutter/material.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'ItemAdd.dart';
 
-int nextItemNo;
+int nextItemNo = 0;
 
 class ItemManage extends StatefulWidget {
   @override
   _ItemManageState createState() => _ItemManageState();
 }
 
-class _ItemManageState extends State<ItemManage>{
-
+class _ItemManageState extends State<ItemManage> {
   TextEditingController _searchController;
 
   void initState() {
@@ -26,42 +25,40 @@ class _ItemManageState extends State<ItemManage>{
     super.dispose();
   }
 
-
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
 
     return Scaffold(
-        resizeToAvoidBottomInset: false, //키보드 올라올 때 오버플로우 발생 방지
-        body: Column(children: [
-          Container(
-            //상품 관리 타이틀
-            margin: EdgeInsets.only(
-                top: MediaQuery.of(context).padding.top), //상태바 크기만큼 위쪽 마진
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  padding: EdgeInsets.only(top : 5.0),
-                  color: Colors.deepPurple,
-                  child: Column(
-                    children: [
-                      Text(
-                        '상품 관리',
-                        style: TextStyle(
+      resizeToAvoidBottomInset: false, //키보드 올라올 때 오버플로우 발생 방지
+      body: Column(children: [
+        Container(
+          //상품 관리 타이틀
+          margin: EdgeInsets.only(
+              top: MediaQuery.of(context).padding.top), //상태바 크기만큼 위쪽 마진
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                padding: EdgeInsets.only(top: 5.0),
+                color: Colors.deepPurple,
+                child: Column(
+                  children: [
+                    Text(
+                      '상품 관리',
+                      style: TextStyle(
                           fontFamily: 'Jalnan',
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
-                          fontSize: 25
-                        ),
-                      ),
-                      Container(
-                        margin: EdgeInsets.symmetric(horizontal: 15.0, vertical: 5.0),
+                          fontSize: 25),
+                    ),
+                    Container(
+                        margin: EdgeInsets.symmetric(
+                            horizontal: 15.0, vertical: 5.0),
                         padding: EdgeInsets.symmetric(horizontal: 10.0),
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(30),
-                          color: Colors.white
-                        ),
+                            borderRadius: BorderRadius.circular(30),
+                            color: Colors.white),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -69,53 +66,52 @@ class _ItemManageState extends State<ItemManage>{
                               child: TextField(
                                 controller: _searchController,
                                 decoration: InputDecoration(
-                                  isDense: true,
-                                  hintText: '   상품명을 검색하세요',
-                                  enabledBorder: InputBorder.none,
-                                  focusedBorder: InputBorder.none
-                                ),
+                                    isDense: true,
+                                    hintText: '   상품명을 검색하세요',
+                                    enabledBorder: InputBorder.none,
+                                    focusedBorder: InputBorder.none),
                               ),
                             ),
-                            IconButton(icon: Icon(Icons.search), onPressed: null)
+                            IconButton(
+                                icon: Icon(Icons.search), onPressed: null)
                           ],
-                        )
-
-                      ),
-                    ],
-                  ),
+                        )),
+                  ],
                 ),
-                Container(
-                  padding: EdgeInsets.only(top : 5.0),
-                  margin: EdgeInsets.symmetric(horizontal: 10.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      Text("사진"),
-                      Text("이름"),
-                      Text("가격"),
-                      Text("재고량"),
-                    ],
-                  ),
+              ),
+              Container(
+                padding: EdgeInsets.only(top: 5.0),
+                margin: EdgeInsets.symmetric(horizontal: 10.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    Text("사진"),
+                    Text("이름"),
+                    Text("가격"),
+                    Text("재고량"),
+                  ],
                 ),
-                Divider(
-                  thickness: 2,
-                ),
-              ],
-            ),
+              ),
+              Divider(
+                thickness: 2,
+              ),
+            ],
           ),
-          Expanded(child: ItemList()),
-        ]),
+        ),
+        Expanded(child: ItemList()),
+      ]),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
         backgroundColor: Colors.deepPurple,
-        onPressed: (){
-          Navigator.push(
+        onPressed: () async {
+          await Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (BuildContext context) =>
-                      ItemAdd(
+                  builder: (BuildContext context) => ItemAdd(
                         itemNo: nextItemNo.toString(),
+                        isNew: true,
                       )));
+          setState(() {});
         },
       ),
     );
@@ -128,7 +124,6 @@ class ItemList extends StatefulWidget {
 }
 
 class _ItemListState extends State<ItemList> {
-
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
@@ -138,18 +133,22 @@ class _ItemListState extends State<ItemList> {
         .doc('0')
         .collection('Product');
 
-    firebase_storage.Reference ref = firebase_storage.FirebaseStorage.instance
-        .ref()
-        .child('Product');
-    
+    firebase_storage.Reference ref =
+        firebase_storage.FirebaseStorage.instance.ref().child('Product');
+
+    void justSetState(){
+      setState(() {
+
+      });
+    }
+
     return FutureBuilder(
         future: firestore.get(),
-        builder: (BuildContext context,
-            AsyncSnapshot<QuerySnapshot> snapshot) {
-          if(snapshot.connectionState == ConnectionState.done) {
+        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
             return ListView(
               children: snapshot.data.docs.map((DocumentSnapshot document) {
-                nextItemNo = int.parse(document.id) + 1;
+                nextItemNo++;
                 return ItemTile(
                   key: ValueKey(document.id),
                   itemNo: document.id,
@@ -157,11 +156,11 @@ class _ItemListState extends State<ItemList> {
                   price: document.data()['Price'].toString(),
                   stock: document.data()['Stock'].toString(),
                   image: ref.child('${document.id}.jpg').getDownloadURL(),
+                  updateList: justSetState,
                 );
               }).toList(),
             );
-
-          }else
+          } else
             return Text("loading");
         });
   }
@@ -173,8 +172,17 @@ class ItemTile extends StatefulWidget {
   String price;
   String stock;
   Future<String> image;
+  Function updateList;
 
-  ItemTile({Key key, this.itemNo, this.name, this.price, this.stock, this.image}) : super(key: key);
+  ItemTile({
+    Key key,
+    this.itemNo,
+    this.name,
+    this.price,
+    this.stock,
+    this.image,
+    this.updateList
+  }) : super(key: key);
 
   @override
   _ItemTileState createState() => _ItemTileState();
@@ -186,17 +194,18 @@ class _ItemTileState extends State<ItemTile> {
     var size = MediaQuery.of(context).size;
 
     return InkWell(
-      onLongPress: (){
-        Navigator.push(
+      onLongPress: () async {
+        await Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (BuildContext context) =>
-                    ItemAdd(
+                builder: (BuildContext context) => ItemAdd(
                       itemNo: widget.itemNo,
                       name: widget.name,
                       price: widget.price,
                       stock: widget.stock,
+                      isNew: false,
                     )));
+        widget.updateList();
       },
       child: Container(
         margin: EdgeInsets.only(bottom: 10.0, left: 10.0, right: 10.0),
@@ -211,19 +220,19 @@ class _ItemTileState extends State<ItemTile> {
             Expanded(
               flex: 1,
               child: Container(
-                height: size.height * 0.07,
-                child: FutureBuilder(
-                  future: widget.image,
-                    builder: (context, snapshot){
-                      if(snapshot.hasData)
+                  height: size.height * 0.07,
+                  child: FutureBuilder(
+                    future: widget.image,
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData)
                         return Image.network(snapshot.data);
                       else
                         return Container();
-                    },)
-              ),
+                    },
+                  )),
             ),
             Expanded(flex: 1, child: Text(widget.name)),
-            Expanded(flex: 1, child:Text(widget.price + '원')),
+            Expanded(flex: 1, child: Text(widget.price + '원')),
             Expanded(flex: 1, child: Text(widget.stock + '개'))
           ],
         ),

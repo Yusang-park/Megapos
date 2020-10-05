@@ -1,3 +1,5 @@
+import 'package:capstone/Widget/ProductAddDialog.dart';
+import 'package:capstone/Widget/ProductDeleteDialog.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:io';
@@ -9,9 +11,9 @@ class ItemAdd extends StatefulWidget {
   String name;
   String price;
   String stock;
+  bool isNew;
 
-  ItemAdd({this.itemNo, this.name, this.price, this.stock});
-
+  ItemAdd({this.itemNo, this.name, this.price, this.stock, this.isNew});
 
   @override
   _ItemAddState createState() => _ItemAddState();
@@ -64,12 +66,12 @@ class _ItemAddState extends State<ItemAdd> {
     }
   }
 
-
-  Future<void> addProduct() async{
-    await firebase_storage.FirebaseStorage.instance
-        .ref('Product/' + widget.itemNo + '.jpg')
-        .putFile(_image);
-
+  Future<void> addProduct() async {
+    if(_image != null) {
+      await firebase_storage.FirebaseStorage.instance
+          .ref('Product/' + widget.itemNo + '.jpg')
+          .putFile(_image);
+    }
     return firestore
         .doc(widget.itemNo)
         .set({
@@ -100,7 +102,7 @@ class _ItemAddState extends State<ItemAdd> {
       body: Column(
         children: [
           Container(
-            //상품 추가 타이틀
+            //상품 등록 타이틀
             margin: EdgeInsets.only(
                 top: MediaQuery.of(context).padding.top), //상태바 크기만큼 위쪽 마진
             child: Column(
@@ -109,7 +111,7 @@ class _ItemAddState extends State<ItemAdd> {
                 Container(
                   padding: EdgeInsets.all(8.0),
                   child: Text(
-                    '상품 추가',
+                    '상품 등록',
                     style: Theme.of(context).textTheme.headline6,
                   ),
                 ),
@@ -148,21 +150,23 @@ class _ItemAddState extends State<ItemAdd> {
                   child: Container(
                     //TODO: 제스처디텍터로 감싸기 & 사진 업로드 방법 고민해보기
                     height: size.height * 0.4,
-                    margin: EdgeInsets.only(top : 5.0),
+                    margin: EdgeInsets.only(top: 5.0),
                     decoration: BoxDecoration(
                         border: Border.all(width: 1, color: Colors.black54),
                         borderRadius: BorderRadius.circular(10.0)),
                     child: Center(
-                      child: _image == null ? Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.photo_camera,
-                            size: 20.0,
-                          ),
-                          Text("상품 이미지 업로드")
-                        ],
-                      ) : Image.file(_image),
+                      child: _image == null
+                          ? Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.photo_camera,
+                                  size: 20.0,
+                                ),
+                                Text("상품 이미지 업로드")
+                              ],
+                            )
+                          : Image.file(_image),
                     ),
                   ),
                 ),
@@ -173,7 +177,7 @@ class _ItemAddState extends State<ItemAdd> {
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
                     RaisedButton(
-                      onPressed: () {
+                      onPressed: () async {
                         setState(() {
                           widget.itemNo = controller[0].text;
                           widget.name = controller[1].text;
@@ -183,13 +187,26 @@ class _ItemAddState extends State<ItemAdd> {
                           makeKeyword();
                         });
 
-                        for (int i = 0; i < 4; i++) {
-                          controller[i].clear();
+                        bool isAdd = await showDialog(
+                            barrierDismissible: false,
+                            context: context,
+                            builder: (context) {
+                              return ProductAddDialog(itemNo: widget.itemNo);
+                            });
+
+                        print('$isAdd');
+
+                        if (isAdd) {
+                          for (int i = 0; i < 4; i++) {
+                            controller[i].clear();
+                          }
+                          addProduct();
+                          _image = null;
+                          Navigator.of(context).pop();
                         }
-                        addProduct();
                       },
                       child: Text(
-                        '저장',
+                        '등록',
                         style: TextStyle(color: Colors.white),
                       ),
                     ),
@@ -202,6 +219,32 @@ class _ItemAddState extends State<ItemAdd> {
                         style: TextStyle(color: Colors.white),
                       ),
                     ),
+                    RaisedButton(
+                      onPressed: widget.isNew
+                          ? null
+                          : () async {
+                              bool isDelete = await showDialog(
+                                  barrierDismissible: false,
+                                  context: context,
+                                  builder: (context) {
+                                    return ProductDeleteDialog();
+                                  });
+
+                              //파이어베이스에서 삭제하기
+                              if (isDelete) {
+                                setState(() {
+                                  widget.itemNo = controller[0].text;
+                                });
+                                deleteProduct();
+                              }
+
+                              Navigator.of(context).pop();
+                            },
+                      child: Text(
+                        '삭제',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
                   ],
                 ),
               ],
@@ -210,5 +253,13 @@ class _ItemAddState extends State<ItemAdd> {
         ],
       ),
     );
+  }
+
+  Future<void> deleteProduct() {
+    return firestore
+        .doc(widget.itemNo)
+        .delete()
+        .then((value) => print("Product Deleted"))
+        .catchError((error) => print("Failed to delete user: $error"));
   }
 }
