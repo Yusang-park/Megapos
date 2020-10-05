@@ -31,7 +31,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.nfcMessage.toString()),
+        title: Text('NFC POS dev CodingSudra'),
         backgroundColor: Colors.deepPurple,
       ),
       body: Padding(

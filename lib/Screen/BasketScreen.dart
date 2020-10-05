@@ -199,8 +199,13 @@ class _BasketScreenState extends State<BasketScreen> {
                               decoration: InputDecoration.collapsed(
                                   hintText: "상품명을 검색하세요."),
                               onChanged: (value) {
-                                searchSubScreen.streamController
-                                    .add(_searchController.text);
+                                if (_searchController.text == "") {
+                                  searchSubScreen.streamClearController
+                                      .add(true);
+                                } else {
+                                  searchSubScreen.streamController
+                                      .add(_searchController.text);
+                                }
                                 setState(() => this);
                               },
                             ),

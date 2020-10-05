@@ -10,50 +10,58 @@ class SearchSubScreen extends StatefulWidget {
   _SearchSubScreenState createState() => _SearchSubScreenState();
   final StreamController<String> streamController =
       StreamController.broadcast();
+  final StreamController<bool> streamClearController =
+      StreamController.broadcast();
   StreamSubscription streamSubscription;
 }
 
 class _SearchSubScreenState extends State<SearchSubScreen> {
-  List<Map> list = List();
   Map<String, dynamic> map;
-
+  bool clearMode = false;
+  List<Map> list = List();
   @override
   void initState() {
     _reloadStream();
-
+    _clearStream();
     super.initState();
+  }
+
+  _clearStream() {
+    widget.streamClearController.stream.listen((data) {
+      setState(() {
+        list.clear();
+        clearMode = true;
+      });
+    });
   }
 
   _reloadStream() {
     widget.streamSubscription = widget.streamController.stream.listen((data) {
-      list.clear();
-      if (data == "") {
-        list.clear();
-        setState(() {});
-      } else {
-        list.clear();
-        CollectionReference firebase = FirebaseFirestore.instance
-            .collection('Store')
-            .doc(widget.marketNo)
-            .collection('Product');
+      clearMode = false;
+      List<Map> tempList = List();
+      // list.clear();
+      CollectionReference firebase = FirebaseFirestore.instance
+          .collection('Store')
+          .doc(widget.marketNo)
+          .collection('Product');
 
-        firebase.where('Keyword', arrayContains: data).get().then((value) => {
-              value.docs.forEach((doc) {
-                map = Map<String, dynamic>();
-                map['Name'] = doc.data()['Name'];
-                print(map['Name']);
-                map['Price'] = doc.data()['Price'];
-                map['Stock'] = doc.data()['Stock'];
-                map['Image'] = 'assets/images/' + doc.id + '.jpg';
-                print(map['Price']);
-                print(map['Stock']);
-                print(map['Image']);
+      firebase.where('Keyword', arrayContains: data).get().then((value) => {
+            value.docs.forEach((doc) {
+              map = Map<String, dynamic>();
+              map['Name'] = doc.data()['Name'];
+              print(map['Name']);
+              map['Price'] = doc.data()['Price'];
+              map['Stock'] = doc.data()['Stock'];
+              map['Image'] = 'assets/images/' + doc.id + '.jpg';
+              print(map['Price']);
+              print(map['Stock']);
+              print(map['Image']);
 
-                list.add(map);
-              }),
-              setState(() {})
-            });
-      }
+              list = tempList;
+              list.add(map);
+            }),
+            setState(() {})
+          });
     });
   }
 
@@ -62,7 +70,7 @@ class _SearchSubScreenState extends State<SearchSubScreen> {
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
 
-    return list.length == 0
+    return (list.length == 0 || clearMode == true)
         ? Expanded(
             child: Padding(
             padding: EdgeInsets.only(top: height / 5),
