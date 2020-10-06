@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:capstone/Screen/BasketScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -47,6 +48,7 @@ class _SearchSubScreenState extends State<SearchSubScreen> {
       firebase.where('Keyword', arrayContains: data).get().then((value) => {
             value.docs.forEach((doc) {
               map = Map<String, dynamic>();
+              map['itemNo'] = doc.id;
               map['Name'] = doc.data()['Name'];
               print(map['Name']);
               map['Price'] = doc.data()['Price'];
@@ -70,11 +72,12 @@ class _SearchSubScreenState extends State<SearchSubScreen> {
     double height = MediaQuery.of(context).size.height;
 
     return (list.length == 0 || clearMode == true)
-        ? Expanded(
-            child: Padding(
-            padding: EdgeInsets.only(top: height / 5),
-            child: Text('상품 명을 입력하세요.'),
-          ))
+        ? Padding(
+            padding: EdgeInsets.only(bottom: height / 3),
+            child: Center(
+              child: Text('상품 명을 입력하세요.'),
+            ),
+          )
         : ListView.separated(
             separatorBuilder: (context, index) => Divider(
               indent: width * 0.06,
@@ -114,7 +117,9 @@ class _SearchSubScreenState extends State<SearchSubScreen> {
           Text('재고 ' + list[index]['Stock'].toString()),
           Spacer(),
           RaisedButton(
-              onPressed: () {},
+              onPressed: () {
+                addStream.sink.add(list[index]['itemNo']);
+              },
               child: Text(
                 '장바구니\n담기', //TODO : onpress 만들어야함
                 overflow: TextOverflow.clip,
