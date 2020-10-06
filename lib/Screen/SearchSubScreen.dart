@@ -39,7 +39,6 @@ class _SearchSubScreenState extends State<SearchSubScreen> {
     widget.streamSubscription = widget.streamController.stream.listen((data) {
       clearMode = false;
       List<Map> tempList = List();
-      // list.clear();
       CollectionReference firebase = FirebaseFirestore.instance
           .collection('Store')
           .doc(widget.marketNo)

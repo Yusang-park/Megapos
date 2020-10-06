@@ -11,7 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:nfc_in_flutter/nfc_in_flutter.dart';
 import 'package:keyboard_visibility/keyboard_visibility.dart';
-
+import '../Model/User.dart';
 import '../Model/payment.dart';
 
 import '../Model/SelectedItem.dart';
@@ -294,7 +294,8 @@ class _BasketScreenState extends State<BasketScreen> {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (BuildContext context) => Payment()));
+                        builder: (BuildContext context) =>
+                            Payment(UserModel("0"), 100, "포카리스웨트")));
               },
               child: Text(
                 '결제하기',

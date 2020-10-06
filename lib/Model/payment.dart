@@ -1,16 +1,16 @@
+import 'package:capstone/Model/User.dart';
 import 'package:flutter/material.dart';
 
 /* 아임포트 결제 모듈을 불러옵니다. */
 import 'package:iamport_flutter/iamport_payment.dart';
 /* 아임포트 결제 데이터 모델을 불러옵니다. */
 import 'package:iamport_flutter/model/payment_data.dart';
-import '../Screen/UserInfo.dart';
 
 class Payment extends StatelessWidget {
-  final UserInfo userInfo;
+  final UserModel userModel;
   final int sumPrice;
   final String name;
-  Payment({this.userInfo, this.sumPrice, this.name});
+  Payment(this.userModel, this.sumPrice, this.name);
 
   @override
   Widget build(BuildContext context) {
@@ -39,11 +39,11 @@ class Payment extends StatelessWidget {
         'name': name, // 주문명
         'merchantUid': 'mid_${DateTime.now().millisecondsSinceEpoch}', // 주문번호
         'amount': sumPrice, // 결제금액
-        'buyerName': userInfo.name, // 구매자 이름
-        'buyerTel': userInfo.phoneNum, // 구매자 연락처
-        'buyerEmail': userInfo.email, // 구매자 이메일
-        'buyerAddr': userInfo.addr, // 구매자 주소
-        'buyerPostcode': userInfo.postCode, // 구매자 우편번호
+        'buyerName': userModel.name, // 구매자 이름
+        'buyerTel': userModel.phoneNum, // 구매자 연락처
+        'buyerEmail': userModel.email, // 구매자 이메일
+        'buyerAddr': userModel.addr, // 구매자 주소
+        'buyerPostcode': userModel.postCode, // 구매자 우편번호
         'appScheme': 'example', // 앱 URL scheme
         'display': {
           'cardQuota': [2, 3] //결제창 UI 내 할부개월수 제한
