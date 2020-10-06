@@ -63,18 +63,20 @@ class _UserInfoState extends State<UserInfo> {
     final statusBarHeight = MediaQuery.of(context).padding.top;
 
     return Scaffold(
+      appBar: AppBar(
+        centerTitle: true,
+        backgroundColor: Colors.deepPurple,
+        leading: Text(''),
+        title: Text(
+          '내 정보',
+          style: TextStyle(
+              color: Colors.white,
+              fontFamily: 'Jalnan',
+              fontWeight: FontWeight.bold),
+        ),
+      ),
       body: Column(
         children: [
-          SizedBox(
-            height: height * 0.03,
-          ),
-          Text(
-            '내 정보',
-            style: Theme.of(context).textTheme.title,
-          ),
-          Divider(
-            thickness: 2,
-          ),
           SizedBox(
             height: height * 0.03,
           ),

@@ -157,6 +157,19 @@ class _BasketScreenState extends State<BasketScreen> {
     final statusBarHeight = MediaQuery.of(context).padding.top;
 
     return Scaffold(
+      appBar: AppBar(
+        centerTitle: true,
+        backgroundColor: Colors.deepPurple,
+        leading: Text(''),
+        title: Text(
+          marketName,
+          style: TextStyle(
+              color: Colors.white,
+              fontFamily: 'Jalnan',
+              fontWeight: FontWeight.bold),
+        ),
+      ),
+
       resizeToAvoidBottomInset: false, //키보드가 올라왔을때 화면이 안밀림
       body: InkWell(
           highlightColor: Colors.transparent, //모서리로 퍼져나가는 이펙트
@@ -169,19 +182,11 @@ class _BasketScreenState extends State<BasketScreen> {
           //제스처를 하기 위한 위젯
           child: Padding(
               padding: EdgeInsets.only(
-                  left: horizontal, right: horizontal, top: statusBarHeight),
+                  left: horizontal, right: horizontal, top: height * 0.02),
               child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Container(
-                        child: Text(
-                      marketName,
-                      style: Theme.of(context).textTheme.title,
-                    )),
-                    Divider(
-                      thickness: 1,
-                    ),
                     Container(
                       padding: EdgeInsets.only(left: width * 0.05),
                       margin: EdgeInsets.only(bottom: height * 0.01),

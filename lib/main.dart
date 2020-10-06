@@ -12,7 +12,7 @@ import 'Screen/HomeScreen.dart';
 
 void main() {
   SystemChrome.setSystemUIOverlayStyle(
-      SystemUiOverlayStyle(statusBarColor: Color(0xFFF9F9F9)));
+      SystemUiOverlayStyle(statusBarColor: Colors.deepPurple));
   runApp(MyApp());
 }
 
