@@ -25,11 +25,24 @@ class _MypageBodyState extends State<MypageBody> {
 
   @override
   initState() {
-    _searchController0.text = name;
-    _searchController1.text = phoneNum;
-    _searchController2.text = email;
-    _searchController3.text = addr;
-    _searchController4.text = postCode;
+    loadUserInfo();
+  }
+
+  void loadUserInfo() {
+    firestore.doc("0").get().then((DocumentSnapshot document) {
+      setState(() {
+        name = document.data()['Name'];
+        phoneNum = document.data()['phoneNum'];
+        email = document.data()['email'];
+        addr = document.data()['addr'];
+        postCode = document.data()['postCode'];
+        _searchController0.text = name;
+        _searchController1.text = phoneNum;
+        _searchController2.text = email;
+        _searchController3.text = addr;
+        _searchController4.text = postCode;
+      });
+    });
   }
 
   @override
