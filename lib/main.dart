@@ -8,6 +8,7 @@ import 'package:flutter_nfc_plugin/models/nfc_event.dart';
 import 'package:flutter_nfc_plugin/models/nfc_message.dart';
 import 'package:flutter_nfc_plugin/models/nfc_state.dart';
 import 'package:flutter_nfc_plugin/nfc_plugin.dart';
+import 'Model/Market.dart';
 import 'Screen/HomeScreen.dart';
 
 void main() {
@@ -116,6 +117,7 @@ class _MyAppState extends State<MyApp> {
 
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
         title: 'Flutter Demo',
         theme: ThemeData(
           primaryColor: Colors.black, //기본컬러이며 위젯들이 보색을 띄게 된다.

@@ -9,11 +9,12 @@ import 'package:image_picker/image_picker.dart';
 class ItemAdd extends StatefulWidget {
   String itemNo;
   String name;
+  String detail;
   String price;
   String stock;
   bool isNew;
 
-  ItemAdd({this.itemNo, this.name, this.price, this.stock, this.isNew});
+  ItemAdd({this.itemNo, this.name, this.detail, this.price, this.stock, this.isNew});
 
   @override
   _ItemAddState createState() => _ItemAddState();
@@ -67,27 +68,42 @@ class _ItemAddState extends State<ItemAdd> {
   }
 
   Future<void> addProduct() async {
+    String image;
     if(_image != null) {
-      await firebase_storage.FirebaseStorage.instance
-          .ref('Product/' + widget.itemNo + '.jpg')
-          .putFile(_image);
+      String path = (widget.detail == null) ? (widget.name + '/normal.jpg')
+                    : widget.name + '/' + widget.detail + '.jpg';
+
+      storage.ref(path).putFile(_image);
+      await storage.ref(path).getDownloadURL().then((value) => image = value);
+    }else { //No image 링크
+      image =
+      'https://firebasestorage.googleapis.com/v0/b/capstone-43f20.appspot.com/o/No_image.png?alt=media&token=20af2af2-d931-4b08-813e-0e4e60fa053d';
     }
+
     return firestore
-        .doc(widget.itemNo)
-        .set({
+        .doc(widget.itemNo).set({
           'Name': widget.name,
+          'Detail' : widget.detail,
           'Price': int.parse(widget.price),
           'Stock': int.parse(widget.stock),
+          'Image' : image,
           'Keyword': keyword
         })
-        .then((value) => print("Product Added"))
+        .then((value) => Navigator.of(context).pop())
         .catchError((error) => print("Error"));
   }
 
   @override
   void initState() {
-    controller[0].text = widget.itemNo;
-    controller[1].text = widget.name;
+    //상품 추가라면 문서번호 미리 생성하기
+    if(widget.isNew)
+      firestore.add({
+        'Name' : '임시상품'
+      }).then((value) => widget.itemNo = value.id)
+      .catchError((onError) => print("Error"));
+
+    controller[0].text = widget.name;
+    controller[1].text = widget.detail;
     controller[2].text = widget.price;
     controller[3].text = widget.stock;
     super.initState();
@@ -97,160 +113,157 @@ class _ItemAddState extends State<ItemAdd> {
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
 
-    return Scaffold(
-      resizeToAvoidBottomInset: false, //키보드 올라올 때 오버플로우 발생 방지
-      body: Column(
-        children: [
-          Container(
-            //상품 등록 타이틀
-            margin: EdgeInsets.only(
-                top: MediaQuery.of(context).padding.top), //상태바 크기만큼 위쪽 마진
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  padding: EdgeInsets.all(8.0),
-                  child: Text(
-                    '상품 등록',
-                    style: Theme.of(context).textTheme.headline6,
+    return WillPopScope(
+      onWillPop: (){ //뒤로가기 버튼을 눌러서 pop할 경우
+        deleteProduct();
+        return Future(() => true);
+      },
+      child: Scaffold(
+        resizeToAvoidBottomInset: false, //키보드 올라올 때 오버플로우 발생 방지
+        body: Column(
+          children: [
+            Container(
+              //상품 등록 타이틀
+              margin: EdgeInsets.only(
+                  top: MediaQuery.of(context).padding.top), //상태바 크기만큼 위쪽 마진
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    padding: EdgeInsets.all(8.0),
+                    child: Text(
+                      '상품 등록',
+                      style: Theme.of(context).textTheme.headline6,
+                    ),
                   ),
-                ),
-                Divider(
-                  thickness: 2,
-                )
-              ],
+                  Divider(
+                    thickness: 2,
+                  )
+                ],
+              ),
             ),
-          ),
-          Container(
-            //상품 정보를 입력받는 필드
-            margin: EdgeInsets.symmetric(horizontal: size.width * 0.05),
+            Container(
+              //상품 정보를 입력받는 필드
+              margin: EdgeInsets.symmetric(horizontal: size.width * 0.05),
 
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                TextField(
-                  decoration: InputDecoration(labelText: '상품 번호'),
-                  enabled: false,
-                  controller: controller[0],
-                ),
-                TextField(
-                  decoration: InputDecoration(labelText: '상품 이름'),
-                  controller: controller[1],
-                ),
-                TextField(
-                  decoration: InputDecoration(labelText: '상품 가격'),
-                  controller: controller[2],
-                ),
-                TextField(
-                  decoration: InputDecoration(labelText: '현 재고량'),
-                  controller: controller[3],
-                ),
-                GestureDetector(
-                  onTap: getImage,
-                  child: Container(
-                    //TODO: 제스처디텍터로 감싸기 & 사진 업로드 방법 고민해보기
-                    height: size.height * 0.4,
-                    margin: EdgeInsets.only(top: 5.0),
-                    decoration: BoxDecoration(
-                        border: Border.all(width: 1, color: Colors.black54),
-                        borderRadius: BorderRadius.circular(10.0)),
-                    child: Center(
-                      child: _image == null
-                          ? Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  Icons.photo_camera,
-                                  size: 20.0,
-                                ),
-                                Text("상품 이미지 업로드")
-                              ],
-                            )
-                          : Image.file(_image),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  TextField(
+                    decoration: InputDecoration(labelText: '상품명'),
+                    controller: controller[0],
+                  ),
+                  TextField(
+                    decoration: InputDecoration(labelText: '상품 디테일'),
+                    controller: controller[1],
+                  ),
+                  TextField(
+                    decoration: InputDecoration(labelText: '상품 가격'),
+                    controller: controller[2],
+                  ),
+                  TextField(
+                    decoration: InputDecoration(labelText: '현 재고량'),
+                    controller: controller[3],
+                  ),
+                  GestureDetector(
+                    onTap: getImage,
+                    child: Container(
+                      //TODO: 제스처디텍터로 감싸기 & 사진 업로드 방법 고민해보기
+                      height: size.height * 0.4,
+                      margin: EdgeInsets.only(top: 5.0),
+                      decoration: BoxDecoration(
+                          border: Border.all(width: 1, color: Colors.black54),
+                          borderRadius: BorderRadius.circular(10.0)),
+                      child: Center(
+                        child: _image == null
+                            ? Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.photo_camera,
+                                    size: 20.0,
+                                  ),
+                                  Text("상품 이미지 업로드")
+                                ],
+                              )
+                            : Image.file(_image),
+                      ),
                     ),
                   ),
-                ),
-                Divider(
-                  thickness: 2,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    RaisedButton(
-                      onPressed: () async {
-                        setState(() {
-                          widget.itemNo = controller[0].text;
-                          widget.name = controller[1].text;
-                          widget.price = controller[2].text;
-                          widget.stock = controller[3].text;
+                  Divider(
+                    thickness: 2,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      RaisedButton(
+                        onPressed: () async {
+                          setState(() {
+                            widget.name = controller[0].text;
+                            widget.detail = controller[1].text;
+                            widget.price = controller[2].text;
+                            widget.stock = controller[3].text;
 
-                          makeKeyword();
-                        });
+                            makeKeyword();
+                          });
 
-                        bool isAdd = await showDialog(
-                            barrierDismissible: false,
-                            context: context,
-                            builder: (context) {
-                              return ProductAddDialog(itemNo: widget.itemNo);
-                            });
+                          bool isAdd = await showDialog(
+                              barrierDismissible: false,
+                              context: context,
+                              builder: (context) {
+                                return ProductAddDialog(itemNo: widget.itemNo);
+                              });
 
-                        print('$isAdd');
+                          if (isAdd)
+                            addProduct();
 
-                        if (isAdd) {
-                          for (int i = 0; i < 4; i++) {
-                            controller[i].clear();
-                          }
-                          addProduct();
-                          _image = null;
-                          Navigator.of(context).pop();
-                        }
-                      },
-                      child: Text(
-                        '등록',
-                        style: TextStyle(color: Colors.white),
+                        },
+                        child: Text(
+                          '등록',
+                          style: TextStyle(color: Colors.white),
+                        ),
                       ),
-                    ),
-                    RaisedButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      child: Text(
-                        '취소',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ),
-                    RaisedButton(
-                      onPressed: widget.isNew
-                          ? null
-                          : () async {
-                              bool isDelete = await showDialog(
-                                  barrierDismissible: false,
-                                  context: context,
-                                  builder: (context) {
-                                    return ProductDeleteDialog();
-                                  });
+                      RaisedButton(
+                        onPressed: () {
+                          //미리 만들어둔 문서ID 삭제
+                          if(widget.isNew)
+                            deleteProduct();
 
-                              //파이어베이스에서 삭제하기
-                              if (isDelete) {
-                                setState(() {
-                                  widget.itemNo = controller[0].text;
-                                });
+                          Navigator.pop(context);
+                        },
+                        child: Text(
+                          '취소',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
+                      RaisedButton(
+                        onPressed: widget.isNew
+                            ? null
+                            : () async {
+                                bool isDelete = await showDialog(
+                                    barrierDismissible: false,
+                                    context: context,
+                                    builder: (context) {
+                                      return ProductDeleteDialog();
+                                    });
+
                                 deleteProduct();
-                              }
 
-                              Navigator.of(context).pop();
-                            },
-                      child: Text(
-                        '삭제',
-                        style: TextStyle(color: Colors.white),
+
+                                Navigator.of(context).pop();
+                              },
+                        child: Text(
+                          '삭제',
+                          style: TextStyle(color: Colors.white),
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          )
-        ],
+                    ],
+                  ),
+                ],
+              ),
+            )
+          ],
+        ),
       ),
     );
   }
@@ -259,7 +272,7 @@ class _ItemAddState extends State<ItemAdd> {
     return firestore
         .doc(widget.itemNo)
         .delete()
-        .then((value) => print("Product Deleted"))
+        .then((value) => print("*************************8Product Deleted ${widget.itemNo}"))
         .catchError((error) => print("Failed to delete user: $error"));
   }
 }

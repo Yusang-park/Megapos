@@ -1,8 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ItemModel {
-  String itemNo;
   String name;
+  String detail;
   int price;
   int stock;
   String image;
@@ -12,13 +12,12 @@ class ItemModel {
         .collection('Store')
         .doc(marketNo)
         .collection('Product');
-    this.itemNo = itemNo;
     firebase.doc(itemNo).get().then((DocumentSnapshot document) {
       this.name = document.data()['Name'];
-
+      this.detail = document.data()['Detail'];
       this.price = document.data()['Price'];
       this.stock = document.data()['Stock'];
-      this.image = 'assets/images/' + itemNo.toString() + '.jpg';
+      this.image = document.data()['Image'];
     });
   }
 }

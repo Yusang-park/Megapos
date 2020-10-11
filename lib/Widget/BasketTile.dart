@@ -104,12 +104,12 @@ class _BasketTileState extends State<BasketTile> {
                 ? Container(
                     decoration: BoxDecoration(
                         border: Border.all(color: Colors.black12, width: 3)),
-                    child: Image.asset(
+                    child: Image.network(
                       widget.selectedItem.item.image,
                       height: height * 0.07,
                       errorBuilder: (context, error, stackTrace) {
-                        return Image.asset(
-                          'assets/images/1.jpg',
+                        return Image.network( //NO image
+                          'https://firebasestorage.googleapis.com/v0/b/capstone-43f20.appspot.com/o/No_image.png?alt=media&token=20af2af2-d931-4b08-813e-0e4e60fa053d',
                           height: height * 0.07,
                         ); //TODO: 에러 이미지로 변경해야함
                       },
@@ -120,7 +120,7 @@ class _BasketTileState extends State<BasketTile> {
             SizedBox(
               width: width * 0.01,
             ),
-            _isLoaded ? Text(widget.selectedItem.item.name) : Text('   '),
+            _isLoaded ? Text('${widget.selectedItem.item.name} ${widget.selectedItem.item.detail}') : Text('   '),
             Spacer(
               flex: 1,
             ),

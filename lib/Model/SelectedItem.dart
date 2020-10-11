@@ -14,7 +14,6 @@ class SelectedItem {
     item = ItemModel(itemNo, marketNo);
     sumPrice = 0;
     count = 0;
-    print(item.itemNo + "번 아이템 클래스 생성");
   }
 
   void plusCount() {

@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'ItemAdd.dart';
 
-int nextItemNo = 0;
 
 class ItemManage extends StatefulWidget {
   @override
@@ -108,7 +107,6 @@ class _ItemManageState extends State<ItemManage> {
               context,
               MaterialPageRoute(
                   builder: (BuildContext context) => ItemAdd(
-                        itemNo: nextItemNo.toString(),
                         isNew: true,
                       )));
           setState(() {});
@@ -133,9 +131,6 @@ class _ItemListState extends State<ItemList> {
         .doc('0')
         .collection('Product');
 
-    firebase_storage.Reference ref =
-        firebase_storage.FirebaseStorage.instance.ref().child('Product');
-
     void justSetState(){
       setState(() {
 
@@ -148,14 +143,14 @@ class _ItemListState extends State<ItemList> {
           if (snapshot.connectionState == ConnectionState.done) {
             return ListView(
               children: snapshot.data.docs.map((DocumentSnapshot document) {
-                nextItemNo++;
                 return ItemTile(
                   key: ValueKey(document.id),
                   itemNo: document.id,
                   name: document.data()['Name'],
+                  detail: document.data()['Detail'],
                   price: document.data()['Price'].toString(),
                   stock: document.data()['Stock'].toString(),
-                  image: ref.child('${document.id}.jpg').getDownloadURL(),
+                  image: document.data()['Image'],
                   updateList: justSetState,
                 );
               }).toList(),
@@ -169,15 +164,17 @@ class _ItemListState extends State<ItemList> {
 class ItemTile extends StatefulWidget {
   String itemNo;
   String name;
+  String detail;
   String price;
   String stock;
-  Future<String> image;
+  String image;
   Function updateList;
 
   ItemTile({
     Key key,
     this.itemNo,
     this.name,
+    this.detail,
     this.price,
     this.stock,
     this.image,
@@ -221,17 +218,9 @@ class _ItemTileState extends State<ItemTile> {
               flex: 1,
               child: Container(
                   height: size.height * 0.07,
-                  child: FutureBuilder(
-                    future: widget.image,
-                    builder: (context, snapshot) {
-                      if (snapshot.hasData)
-                        return Image.network(snapshot.data);
-                      else
-                        return Container();
-                    },
-                  )),
-            ),
-            Expanded(flex: 1, child: Text(widget.name)),
+                  child: Image.network(widget.image)
+            ),),
+            Expanded(flex: 1, child: Text('${widget.name} ${widget.detail}')),
             Expanded(flex: 1, child: Text(widget.price + '원')),
             Expanded(flex: 1, child: Text(widget.stock + '개'))
           ],
