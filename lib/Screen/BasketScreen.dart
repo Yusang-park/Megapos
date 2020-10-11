@@ -19,6 +19,7 @@ import '../Widget/BasketTile.dart';
 
 StreamController<List<dynamic>> changeStream =
     StreamController.broadcast(); //타일의 내용이 변경되었을 때 사용
+StreamController<String> addStream = StreamController();
 
 class BasketScreen extends StatefulWidget {
   BasketScreen({this.marketNo});
@@ -35,7 +36,8 @@ class _BasketScreenState extends State<BasketScreen> {
   SearchSubScreen searchSubScreen;
   int _sumPrice = 0;
   String marketName = '';
-
+  double _searchOpacity = 0.0;
+  double _mainOpacity = 1.0;
   @override
   void initState() {
     _marketload();
@@ -43,6 +45,7 @@ class _BasketScreenState extends State<BasketScreen> {
     _changeStream();
     _focusListen();
     _keyListen();
+    _addListen();
     super.initState();
   }
 
@@ -84,6 +87,12 @@ class _BasketScreenState extends State<BasketScreen> {
         .listen((NDEFMessage message) {
       itemNo = message.payload.toString().split("itemNo:")[1];
 //NFC 끝
+      addStream.sink.add(itemNo);
+    });
+  }
+
+  void _addListen() {
+    addStream.stream.listen((itemNo) {
       bool _trigger = false;
       print('상품번호 : ' + itemNo);
 
@@ -176,8 +185,10 @@ class _BasketScreenState extends State<BasketScreen> {
 
           splashColor: Colors.transparent, //클릭시 원형 이펙트
           onTap: () {
-            FocusScope.of(context)
-                .requestFocus(FocusNode()); //textfield의 포커스를 빼앗음
+            setState(() {
+              FocusScope.of(context)
+                  .requestFocus(FocusNode()); //textfield의 포커스를 빼앗음
+            });
           },
           //제스처를 하기 위한 위젯
           child: Padding(
@@ -189,87 +200,138 @@ class _BasketScreenState extends State<BasketScreen> {
                   children: [
                     Container(
                       padding: EdgeInsets.only(left: width * 0.05),
-                      margin: EdgeInsets.only(bottom: height * 0.01),
+                      margin: EdgeInsets.only(
+                        bottom: height * 0.01,
+                      ),
                       width: width * 0.85,
                       height: height * 0.06,
                       decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(50),
                           color: Colors.black12),
-                      child: Row(
+                      child: Stack(
+                        alignment: Alignment.centerLeft,
                         children: [
-                          Flexible(
-                            child: TextField(
-                              focusNode: _searchFocus,
-                              controller: _searchController,
-                              decoration: InputDecoration.collapsed(
-                                  hintText: "상품명을 검색하세요."),
-                              onChanged: (value) {
-                                if (_searchController.text == "") {
-                                  searchSubScreen.streamClearController
-                                      .add(true);
-                                } else {
-                                  searchSubScreen.streamController
-                                      .add(_searchController.text);
-                                }
-                                setState(() => this);
-                              },
-                            ),
-                            flex: 9,
+                          TextField(
+                            maxLines: 1,
+                            textAlign: TextAlign.start,
+                            focusNode: _searchFocus,
+                            controller: _searchController,
+                            decoration: InputDecoration.collapsed(
+                                hintText: "상품명을 검색하세요."),
+                            onChanged: (value) {
+                              if (_searchController.text == "") {
+                                searchSubScreen.streamClearController.add(true);
+                              } else {
+                                searchSubScreen.streamController
+                                    .add(_searchController.text);
+                              }
+                              setState(() => this);
+                            },
+                            onTap: () {
+                              setState(() {
+                                searchSubScreen.streamClearController.add(true);
+                              });
+                            },
                           ),
-                          _searchController.text.isNotEmpty
-                              ? IconButton(
-                                  icon: Icon(Icons.close_rounded),
-                                  onPressed: () {
-                                    //TODO : 리스트 뷰 스크린 필요
-                                    setState(() {
-                                      _searchController.clear();
-                                      FocusScope.of(context)
-                                          .requestFocus(FocusNode());
-                                      LogicalKeyboardKey.close;
-                                    });
-                                  },
-                                )
-                              : SizedBox()
+                          Positioned(
+                              right: 0.0,
+                              child: _searchController.text.isNotEmpty
+                                  ? IconButton(
+                                      icon: Icon(Icons.close_rounded),
+                                      onPressed: () {
+                                        //TODO : 리스트 뷰 스크린 필요
+                                        setState(() {
+                                          setState(() {
+                                            _searchOpacity = 0.0;
+                                            _mainOpacity = 1.0;
+                                            _searchController.clear();
+                                            FocusScope.of(context)
+                                                .requestFocus(FocusNode());
+                                            LogicalKeyboardKey.close;
+                                          });
+                                        });
+                                      },
+                                    )
+                                  : SizedBox()),
                         ],
                       ),
                     ),
                     Divider(),
-                    StreamBuilder(
-                      stream: changeStream.stream,
-                      builder: (context, snapshot) {
-                        return _listWidget();
-                      },
+                    Expanded(
+                      child: StreamBuilder(
+                        stream: changeStream.stream,
+                        builder: (context, snapshot) {
+                          return _listWidget(width, height);
+                        },
+                      ),
                     ),
-                    _searchMode || _searchController.value.text.isNotEmpty
-                        ? Container()
-                        : _bottomWidget(width, height)
+                    Opacity(
+                      child: _bottomWidget(width, height),
+                      opacity: _mainOpacity,
+                    ),
                   ]))),
     );
   }
 
-  Widget _listWidget() {
-    return (_searchMode || _searchController.value.text.isNotEmpty //키보드가 올라온 상태
-        ? searchSubScreen
-        : _list.isEmpty
-            ? Expanded(
-                flex: 1,
-                child: Center(
-                    child: Text(
-                  '상품을 고르신 후\n스마트폰 뒷면을 가격표에 태그하세요!',
-                  overflow: TextOverflow.clip,
-                  textAlign: TextAlign.center,
-                )))
-            : Expanded(
-                flex: 1,
-                child: ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: _list.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      return _list[index];
-                    }),
-              ));
+  Widget _listWidget(width, height) {
+    if (_searchMode || _searchController.value.text.isNotEmpty) {
+      _searchOpacity = 1.0;
+      _mainOpacity = 0.0;
+    } else {
+      _searchOpacity = 0.0;
+      _mainOpacity = 1.0;
+    }
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        Opacity(
+          child: searchSubScreen,
+          opacity: _searchOpacity,
+        ),
+        Opacity(
+          opacity: _mainOpacity,
+          child: _list.isEmpty
+              ? Center(
+                  child: Padding(
+                  padding: EdgeInsets.only(
+                      bottom: MediaQuery.of(context).padding.top * 2),
+                  child: Text(
+                    '상품을 고르신 후\n스마트폰 뒷면을 가격표에 태그하세요!',
+                    overflow: TextOverflow.clip,
+                    textAlign: TextAlign.center,
+                  ),
+                ))
+              : ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: _list.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return _list[index];
+                  }),
+        ),
+      ],
+    );
   }
 
+// return (_searchMode || _searchController.value.text.isNotEmpty //키보드가 올라온 상태
+  // ? searchSubScreen
+  // : _list.isEmpty
+  //     ? Expanded(
+  //         flex: 1,
+  //         child: Center(
+  //             child: Text(
+  //           '상품을 고르신 후\n스마트폰 뒷면을 가격표에 태그하세요!',
+  //           overflow: TextOverflow.clip,
+  //           textAlign: TextAlign.center,
+  //         )))
+  //     : Expanded(
+  //         flex: 1,
+  //         child: ListView.builder(
+  //             shrinkWrap: true,
+  //             itemCount: _list.length,
+  //             itemBuilder: (BuildContext context, int index) {
+  //               return _list[index];
+  //             }),
+  //       ));
   Widget _bottomWidget(width, height) {
     return Column(
       children: [
@@ -277,7 +339,7 @@ class _BasketScreenState extends State<BasketScreen> {
           stream: changeStream.stream,
           builder: (context, snapshot) {
             return Padding(
-              padding: EdgeInsets.only(right: width * 0.04),
+              padding: EdgeInsets.only(right: width * 0.07),
               child: Align(
                 alignment: Alignment.centerRight,
                 child: Text(
