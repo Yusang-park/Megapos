@@ -1,3 +1,4 @@
+import 'package:capstone/Model/Market.dart';
 import 'package:capstone/Widget/ProductAddDialog.dart';
 import 'package:capstone/Widget/ProductDeleteDialog.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
@@ -5,6 +6,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
+
 
 class ItemAdd extends StatefulWidget {
   String itemNo;
@@ -168,7 +171,6 @@ class _ItemAddState extends State<ItemAdd> {
                   GestureDetector(
                     onTap: getImage,
                     child: Container(
-                      //TODO: 제스처디텍터로 감싸기 & 사진 업로드 방법 고민해보기
                       height: size.height * 0.4,
                       margin: EdgeInsets.only(top: 5.0),
                       decoration: BoxDecoration(

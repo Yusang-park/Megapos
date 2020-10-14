@@ -1,6 +1,7 @@
 import 'package:capstone/Model/User.dart';
 import 'package:capstone/Screen/BasketScreen.dart';
 import 'package:capstone/Screen/ItemManage.dart';
+import 'package:capstone/Screen/SignUpScreen.dart';
 import 'package:capstone/Screen/UserInfo.dart';
 import 'package:flutter/material.dart';
 
@@ -31,7 +32,7 @@ class _HomeBodyState extends State<HomeBody> {
                   context,
                   MaterialPageRoute(
                       builder: (BuildContext context) =>
-                          UserInfo(UserModel("0"))));
+                          UserInfo(UserModel(userNo: '0'))));
             },
             child: Text('내정보관리')),
         RaisedButton(
@@ -42,6 +43,14 @@ class _HomeBodyState extends State<HomeBody> {
                       builder: (BuildContext context) => ItemManage()));
             },
             child: Text('상품관리')),
+        RaisedButton(
+            onPressed: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (BuildContext context) => SignUpScreen()));
+            },
+            child: Text('회원가입')),
       ],
     );
   }

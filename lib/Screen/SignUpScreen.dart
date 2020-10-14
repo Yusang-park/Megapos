@@ -16,7 +16,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final UserModel userModel = UserModel.noArgument();
+    final UserModel userModel = UserModel();
     final size = MediaQuery.of(context).size;
     final height = size.height;
     final width = size.width;
@@ -155,7 +155,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
               child: RaisedButton(
                 padding: EdgeInsets.symmetric(vertical: 5),
                 color: Colors.blue,
-                onPressed: () {},
+                onPressed: () {
+                },
                 child: Container(
                     alignment: Alignment.center,
                     width: width * 0.9,

@@ -36,6 +36,8 @@ dependencies:
       ref: master
   image_picker: ^0.6.7+11
   firebase_storage: "^5.0.0-dev.2"
+  provider: ^4.3.2+2
+  shared_preferences: ^0.5.12
 
     
   

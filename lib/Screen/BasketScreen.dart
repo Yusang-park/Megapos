@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:capstone/Model/Market.dart';
 import 'package:capstone/Model/SelectedItem.dart';
 import 'package:capstone/Model/payment.dart';
 import 'package:capstone/Screen/SearchSubScreen.dart';
@@ -13,7 +14,7 @@ import 'package:nfc_in_flutter/nfc_in_flutter.dart';
 import 'package:keyboard_visibility/keyboard_visibility.dart';
 import '../Model/User.dart';
 import '../Model/payment.dart';
-
+import 'package:provider/provider.dart';
 import '../Model/SelectedItem.dart';
 import '../Widget/BasketTile.dart';
 
@@ -22,8 +23,11 @@ StreamController<List<dynamic>> changeStream =
 StreamController<String> addStream = StreamController();
 
 class BasketScreen extends StatefulWidget {
-  BasketScreen({this.marketNo});
-  String marketNo = 'null';
+  String marketNo;
+
+  BasketScreen({Key key, this.marketNo}) : super(key: key);
+
+
   @override
   _BasketScreenState createState() => _BasketScreenState();
 }
@@ -40,7 +44,6 @@ class _BasketScreenState extends State<BasketScreen> {
   double _mainOpacity = 1.0;
   @override
   void initState() {
-    _marketload();
     _tagStream();
     _changeStream();
     _focusListen();
@@ -49,21 +52,7 @@ class _BasketScreenState extends State<BasketScreen> {
     super.initState();
   }
 
-  void _marketload() {
-    CollectionReference firebase =
-        FirebaseFirestore.instance.collection('Store');
 
-    firebase.doc(widget.marketNo).get().then((DocumentSnapshot document) {
-      setState(() {
-        marketName = document.data()['Name'];
-        print('매장명 : ' + marketName);
-        searchSubScreen = SearchSubScreen(
-          marketNo: widget.marketNo,
-        );
-        speak('환영합니다 ' + marketName + '입니다');
-      });
-    });
-  }
 
   void _changeStream() {
     StreamSubscription streamSubscription = changeStream.stream.listen((data) {
@@ -165,13 +154,14 @@ class _BasketScreenState extends State<BasketScreen> {
     final horizontal = width * 0.02;
     final statusBarHeight = MediaQuery.of(context).padding.top;
 
+    String marketName = context.watch<Market>().name;
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
         backgroundColor: Colors.deepPurple,
         leading: Text(''),
         title: Text(
-          marketName,
+          context.watch<Market>().name,
           style: TextStyle(
               color: Colors.white,
               fontFamily: 'Jalnan',
@@ -362,7 +352,7 @@ class _BasketScreenState extends State<BasketScreen> {
                     context,
                     MaterialPageRoute(
                         builder: (BuildContext context) =>
-                            Payment(UserModel("0"), 100, "포카리스웨트")));
+                            Payment(context.watch<UserModel>(), _sumPrice, '${_list[0].selectedItem.item.name} 외 ${_list.length - 1}건')));
               },
               child: Text(
                 '결제하기',

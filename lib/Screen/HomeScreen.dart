@@ -4,8 +4,6 @@ import 'package:capstone/Screen/MypageBody.dart';
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatefulWidget {
-  HomeScreen({this.nfcMessage});
-  final nfcMessage;
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }

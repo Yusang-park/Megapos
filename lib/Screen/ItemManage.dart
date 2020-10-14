@@ -1,9 +1,10 @@
-import 'dart:io';
+import 'package:capstone/Model/Market.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'ItemAdd.dart';
+import 'package:provider/provider.dart';
+
 
 
 class ItemManage extends StatefulWidget {
@@ -125,10 +126,12 @@ class _ItemListState extends State<ItemList> {
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
-    //TODO : 매장번호 읽어온 값으로 변경하기
+
+    final marketNo = context.watch<Market>().marketNo;
+
     CollectionReference firestore = FirebaseFirestore.instance
         .collection('Store')
-        .doc('0')
+        .doc(marketNo)
         .collection('Product');
 
     void justSetState(){
