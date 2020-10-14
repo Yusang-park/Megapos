@@ -20,7 +20,6 @@ class _HomeBodyState extends State<HomeBody> {
               Navigator.push(context, MaterialPageRoute(
                 builder: (context) {
                   return BasketScreen(
-                    marketNo: '0',
                   );
                 },
               ));

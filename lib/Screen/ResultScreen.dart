@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class ResultScreen extends StatelessWidget {
@@ -22,16 +23,18 @@ class ResultScreen extends StatelessWidget {
 
     Timer.periodic(Duration(seconds: 3), (timer){
       timer.cancel();
-      Navigator.pop(context);
+      Navigator.pop(context, true);
     });
 
 
     return Scaffold(
       backgroundColor: Colors.deepPurple,
       appBar: new AppBar(
+        backgroundColor: Colors.deepPurple,
         title: Text('결제 내역'),
       ),
       body: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(
@@ -43,7 +46,7 @@ class ResultScreen extends StatelessWidget {
             ),
           ),
           Text(
-            '잠시 후 꺼집니다.',
+            '결제 내역 페이지로 이동합니다',
             style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 16.0,

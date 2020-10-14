@@ -23,11 +23,6 @@ StreamController<List<dynamic>> changeStream =
 StreamController<String> addStream = StreamController();
 
 class BasketScreen extends StatefulWidget {
-  String marketNo;
-
-  BasketScreen({Key key, this.marketNo}) : super(key: key);
-
-
   @override
   _BasketScreenState createState() => _BasketScreenState();
 }
@@ -105,7 +100,7 @@ class _BasketScreenState extends State<BasketScreen> {
           setState(() {
             _list.add(BasketTile(
               itemNo: itemNo,
-              selectedItem: loadDB(itemNo, widget.marketNo),
+              selectedItem: loadDB(itemNo, context.read<Market>().marketNo),
             ));
           });
         }
@@ -154,7 +149,6 @@ class _BasketScreenState extends State<BasketScreen> {
     final horizontal = width * 0.02;
     final statusBarHeight = MediaQuery.of(context).padding.top;
 
-    String marketName = context.watch<Market>().name;
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -347,12 +341,16 @@ class _BasketScreenState extends State<BasketScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             RaisedButton(
-              onPressed: () {
-                Navigator.push(
+              onPressed: () async {
+                final result = await Navigator.push(
                     context,
                     MaterialPageRoute(
                         builder: (BuildContext context) =>
                             Payment(context.watch<UserModel>(), _sumPrice, '${_list[0].selectedItem.item.name} 외 ${_list.length - 1}건')));
+
+                if(result)    //결제 성공이라면 결제 내역 보여주기
+                  //TODO: 결제내역페이지 만들어서 푸쉬리슬레이먼트하기
+                  ;
               },
               child: Text(
                 '결제하기',
@@ -385,7 +383,7 @@ class _BasketScreenState extends State<BasketScreen> {
                 setState(() {
                   _list.add(BasketTile(
                     itemNo: '1',
-                    selectedItem: loadDB('1', widget.marketNo),
+                    selectedItem: loadDB('1', context.watch<Market>().marketNo),
                   ));
                 });
               },
