@@ -15,6 +15,22 @@
       },
       "oauth_client": [
         {
+          "client_id": "899933531427-100vskv61oll1miuthj471qktqe8f7dh.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.codingslave.capstone",
+            "certificate_hash": "374aa7e8f22d891a6c3e1d8fe96f488e2f62d34d"
+          }
+        },
+        {
+          "client_id": "899933531427-dp450nv4hdjeh7crbstbqk32ahrbraqp.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.codingslave.capstone",
+            "certificate_hash": "7a154c372562d69c8a4a9578cc2ae7ec89eba51d"
+          }
+        },
+        {
           "client_id": "899933531427-r84e3supof7g91b8jc829v1s4c57e69n.apps.googleusercontent.com",
           "client_type": 3
         }

@@ -4,6 +4,7 @@ import 'package:capstone/Screen/BasketScreen.dart';
 import 'package:capstone/Screen/ItemManage.dart';
 import 'package:capstone/Screen/SignUpScreen.dart';
 import 'package:capstone/Screen/UserInfo.dart';
+import 'package:capstone/Widget/SignIn.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -49,7 +50,7 @@ class _HomeBodyState extends State<HomeBody> {
               Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (BuildContext context) => SignUpScreen()));
+                      builder: (BuildContext context) => GoogleSignPage()));
             },
             child: Text('회원가입')),
       ],
