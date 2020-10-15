@@ -16,7 +16,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'Screen/ResultScreen.dart';
 
-
 void main() {
   SystemChrome.setSystemUIOverlayStyle(
       SystemUiOverlayStyle(statusBarColor: Colors.deepPurple));
@@ -56,7 +55,6 @@ class InitAppState extends State<InitApp> {
   Future<void> initPlatformState() async {
     NfcState _nfcState;
 
-
     //NFC 정보 읽기
     try {
       _nfcState = await nfcPlugin.nfcState;
@@ -71,7 +69,7 @@ class InitAppState extends State<InitApp> {
         setState(() {
           nfcMessageStartedWith = _nfcEventStartedWith.message;
           nfcMarketNo = nfcMessageStartedWith.payload[0].split('marketNo:')[1];
-          if (nfcMarketNo != 'null'){
+          if (nfcMarketNo != 'null') {
             //마켓 정보 읽기
             _market.readFromDB(nfcMarketNo);
             withNfcMode = true;
@@ -109,10 +107,9 @@ class InitAppState extends State<InitApp> {
       nfcState = _nfcState.toString();
     });
   }
-  
-  
+
   // Define an async function to initialize FlutterFire
-  void initializeFlutterFire() async {
+  Future initializeFlutterFire() async {
     try {
       // Wait for Firebase to initialize and set `_initialized` state to true
       await Firebase.initializeApp();
@@ -127,32 +124,33 @@ class InitAppState extends State<InitApp> {
     }
   }
 
-  void initMarketWithNFC() async{
+  void initMarketWithNFC() async {
     await initPlatformState();
     setState(() {
       isMarketLoad = true;
     });
   }
 
-  void initUser() async{
+  void initUser() async {
     final prefs = await SharedPreferences.getInstance();
     //userNo를 읽고, 존재하지 않는다면 'null'을 반환
     String userNo = prefs.getString('userNo') ?? 'null';
-    _user.readFromDB(userNo).then((value){
+    _user.readFromDB(userNo).then((value) {
       setState(() {
         isUserLoad = true;
       });
     });
   }
 
-
   @override
   void initState() {
-    initializeFlutterFire();
-    initMarketWithNFC();
-    initUser();
+    //firebase null 에러 해결
+    initializeFlutterFire().whenComplete(() {
+      initMarketWithNFC();
+      initUser();
 
-    super.initState();
+      super.initState();
+    });
   }
 
   @override
@@ -188,7 +186,7 @@ class InitAppState extends State<InitApp> {
       );
     }
 
-    return MyApp(market : _market, withNfcMode: withNfcMode, user: _user);
+    return MyApp(market: _market, withNfcMode: withNfcMode, user: _user);
   }
 }
 
@@ -197,7 +195,6 @@ class MyApp extends StatefulWidget {
   bool withNfcMode;
   UserModel user;
 
-
   MyApp({Key key, this.market, this.withNfcMode, this.user}) : super(key: key);
 
   @override
@@ -205,7 +202,6 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-
   @override
   initState() {
     print("marketNo : ${widget.market.marketNo}");
@@ -214,21 +210,20 @@ class _MyAppState extends State<MyApp> {
     super.initState();
   }
 
-
   Widget build(BuildContext context) {
     return MultiProvider(
-      providers: [
-        ChangeNotifierProvider.value(
-          value: widget.market,
-        ),
-        ChangeNotifierProvider.value(
-          value: widget.user,
-        ),
-      ],
-      child: MaterialApp(
-        routes: {
-          '/result' : (context) => ResultScreen(),
-        },
+        providers: [
+          ChangeNotifierProvider.value(
+            value: widget.market,
+          ),
+          ChangeNotifierProvider.value(
+            value: widget.user,
+          ),
+        ],
+        child: MaterialApp(
+          routes: {
+            '/result': (context) => ResultScreen(),
+          },
           debugShowCheckedModeBanner: false,
           title: 'Flutter Demo',
           theme: ThemeData(
@@ -241,20 +236,16 @@ class _MyAppState extends State<MyApp> {
             ),
             visualDensity: VisualDensity.adaptivePlatformDensity,
             buttonTheme: ButtonThemeData(
-              shape:
-                  RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(50)),
               buttonColor: Colors.deepPurple,
               textTheme: ButtonTextTheme.primary,
             ),
           ),
           //TODO : 권한에 따른 다른 화면 보여주기.
-          home: widget.user.authState == "Manager" ? (
-            ItemManage()
-          )
-                  : (
-              widget.withNfcMode
-                  ? BasketScreen()
-                  : HomeScreen()),
-          ));
+          home: widget.user.authState == "Manager"
+              ? (ItemManage())
+              : (widget.withNfcMode ? BasketScreen() : HomeScreen()),
+        ));
   }
 }

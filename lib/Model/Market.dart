@@ -16,6 +16,8 @@ class Market with ChangeNotifier {
     CollectionReference firebase =
         FirebaseFirestore.instance.collection('Store');
 
+    this.marketNo = marketNo;
+
     //파이어베이스에서 정보 읽어와 속성에 할당
     await firebase.doc(marketNo).get().then((DocumentSnapshot document) {
       this.name = document.data()["Name"];
@@ -26,7 +28,6 @@ class Market with ChangeNotifier {
 
     print("로드 완료입니당 :: ${this.name}");
 
-    this.marketNo = marketNo;
     //값이 변했음을 알림
     notifyListeners();
     print("프롬디비 : 값이 변경됨을 알림");

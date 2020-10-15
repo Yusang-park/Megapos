@@ -7,7 +7,6 @@ import 'package:capstone/Screen/SearchSubScreen.dart';
 import 'package:capstone/Widget/BasketTile.dart';
 import 'package:capstone/Widget/ConfirmDialog.dart';
 import 'package:capstone/Widget/TTS.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:nfc_in_flutter/nfc_in_flutter.dart';
@@ -20,7 +19,7 @@ import '../Widget/BasketTile.dart';
 
 StreamController<List<dynamic>> changeStream =
     StreamController.broadcast(); //타일의 내용이 변경되었을 때 사용
-StreamController<String> addStream = StreamController();
+StreamController<String> addStream = StreamController.broadcast();
 
 class BasketScreen extends StatefulWidget {
   @override
@@ -47,10 +46,14 @@ class _BasketScreenState extends State<BasketScreen> {
     super.initState();
   }
 
-
+  @override
+  void dispose() {
+    super.dispose();
+  }
 
   void _changeStream() {
-    StreamSubscription streamSubscription = changeStream.stream.listen((data) {
+    StreamSubscription<List> changeSubscription =
+        changeStream.stream.listen((data) {
       if (data[1] != null) {
         //0번 요소가 null이면 removeTile
         _list.remove(data[1]); //1번 요소는 Tile 객체
@@ -345,10 +348,12 @@ class _BasketScreenState extends State<BasketScreen> {
                 final result = await Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (BuildContext context) =>
-                            Payment(context.watch<UserModel>(), _sumPrice, '${_list[0].selectedItem.item.name} 외 ${_list.length - 1}건')));
+                        builder: (BuildContext context) => Payment(
+                            context.watch<UserModel>(),
+                            _sumPrice,
+                            '${_list[0].selectedItem.item.name} 외 ${_list.length - 1}건')));
 
-                if(result)    //결제 성공이라면 결제 내역 보여주기
+                if (result) //결제 성공이라면 결제 내역 보여주기
                   //TODO: 결제내역페이지 만들어서 푸쉬리슬레이먼트하기
                   ;
               },
@@ -382,8 +387,9 @@ class _BasketScreenState extends State<BasketScreen> {
               onPressed: () {
                 setState(() {
                   _list.add(BasketTile(
-                    itemNo: '1',
-                    selectedItem: loadDB('1', context.watch<Market>().marketNo),
+                    itemNo: '5g3K6glATwe52aDYfrHx',
+                    selectedItem: loadDB('5g3K6glATwe52aDYfrHx',
+                        context.read<Market>().marketNo),
                   ));
                 });
               },

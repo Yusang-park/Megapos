@@ -1,9 +1,11 @@
+import 'package:capstone/Model/Market.dart';
 import 'package:capstone/Model/User.dart';
 import 'package:capstone/Screen/BasketScreen.dart';
 import 'package:capstone/Screen/ItemManage.dart';
 import 'package:capstone/Screen/SignUpScreen.dart';
 import 'package:capstone/Screen/UserInfo.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class HomeBody extends StatefulWidget {
   @override
@@ -17,12 +19,12 @@ class _HomeBodyState extends State<HomeBody> {
       children: [
         RaisedButton(
             onPressed: () {
-              Navigator.push(context, MaterialPageRoute(
-                builder: (context) {
-                  return BasketScreen(
-                  );
-                },
-              ));
+              context.read<Market>().readFromDB('0').whenComplete(() {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (BuildContext context) => BasketScreen()));
+              });
             },
             child: Text('장바구니')),
         RaisedButton(
