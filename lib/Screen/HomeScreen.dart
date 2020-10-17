@@ -1,6 +1,7 @@
 import 'package:capstone/Screen/CartBody.dart';
 import 'package:capstone/Screen/HomeBody.dart';
 import 'package:capstone/Screen/MypageBody.dart';
+import 'package:capstone/Screen/UserBody.dart';
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -19,7 +20,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    List<Widget> bodyWidget = [HomeBody(), CartBody(), MypageBody()];
+    List<Widget> bodyWidget = [HomeBody(), CartBody(), UserBody()];
     final size = MediaQuery.of(context).size;
     final width = size.width;
     final height = size.height;

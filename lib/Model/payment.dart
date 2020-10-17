@@ -39,11 +39,11 @@ class Payment extends StatelessWidget {
         'name': name, // 주문명
         'merchantUid': 'mid_${DateTime.now().millisecondsSinceEpoch}', // 주문번호
         'amount': sumPrice, // 결제금액
-        'buyerName': userModel.name, // 구매자 이름
-        'buyerTel': userModel.phoneNum, // 구매자 연락처
-        'buyerEmail': userModel.email, // 구매자 이메일
-        'buyerAddr': userModel.addr, // 구매자 주소
-        'buyerPostcode': userModel.postCode, // 구매자 우편번호
+        // 'buyerName': userModel.name, // 구매자 이름
+        // 'buyerTel': userModel.phoneNum, // 구매자 연락처
+        // 'buyerEmail': userModel.email, // 구매자 이메일
+        // 'buyerAddr': userModel.addr, // 구매자 주소
+        // 'buyerPostcode': userModel.postCode, // 구매자 우편번호
         'appScheme': 'example', // 앱 URL scheme
         'display': {
           'cardQuota': [2, 3] //결제창 UI 내 할부개월수 제한

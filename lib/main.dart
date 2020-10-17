@@ -48,7 +48,7 @@ class InitAppState extends State<InitApp> {
   bool isMarketLoad = false;
 
   //TODO : 앱 초기화시 권한 확인하기, 로그인 여부 및 계정의 종류(고객? 관리자?) 어떻게 저장할 수 있을까? -> 유저로 바꿔야지
-  UserModel _user = UserModel();
+  UserModel userModel = UserModel();
   bool isUserLoad = false;
 
   //NFC 태그 실행을 위한 함수
@@ -132,13 +132,9 @@ class InitAppState extends State<InitApp> {
   }
 
   void initUser() async {
-    final prefs = await SharedPreferences.getInstance();
-    //userNo를 읽고, 존재하지 않는다면 'null'을 반환
-    String userNo = prefs.getString('userNo') ?? 'null';
-    _user.readFromDB(userNo).then((value) {
-      setState(() {
-        isUserLoad = true;
-      });
+    await userModel.initUser();
+    setState(() {
+      isUserLoad = true;
     });
   }
 
@@ -186,7 +182,7 @@ class InitAppState extends State<InitApp> {
       );
     }
 
-    return MyApp(market: _market, withNfcMode: withNfcMode, user: _user);
+    return MyApp(market: _market, withNfcMode: withNfcMode, user: userModel);
   }
 }
 

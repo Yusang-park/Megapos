@@ -2,7 +2,7 @@ import 'package:capstone/Model/Market.dart';
 import 'package:capstone/Model/User.dart';
 import 'package:capstone/Screen/BasketScreen.dart';
 import 'package:capstone/Screen/ItemManage.dart';
-import 'package:capstone/Screen/SignUpScreen.dart';
+
 import 'package:capstone/Screen/UserInfo.dart';
 import 'package:capstone/Widget/SignIn.dart';
 import 'package:flutter/material.dart';
@@ -30,11 +30,8 @@ class _HomeBodyState extends State<HomeBody> {
             child: Text('장바구니')),
         RaisedButton(
             onPressed: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (BuildContext context) =>
-                          UserInfo(UserModel(userNo: '0'))));
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (BuildContext context) => null));
             },
             child: Text('내정보관리')),
         RaisedButton(
