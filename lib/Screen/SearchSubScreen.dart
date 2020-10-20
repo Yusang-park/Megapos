@@ -135,12 +135,6 @@ class _SearchSubScreenState extends State<SearchSubScreen> {
     return Image.network(
       list[index]['Image'],
       width: width * 0.1,
-      errorBuilder: (context, error, stackTrace) {
-        return Image.asset(
-          'assets/images/1.jpg', //TODO : 에러 이미지 필요 없을 듯! 노이미지 만들어놨음
-          width: width * 0.1,
-        );
-      },
     );
   }
 }

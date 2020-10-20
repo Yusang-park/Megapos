@@ -30,8 +30,6 @@ class _ItemAddState extends State<ItemAdd> {
   File _image;
   final picker = ImagePicker();
 
-  //TODO : 매장번호바꾸기
-
   firebase_storage.FirebaseStorage storage =
       firebase_storage.FirebaseStorage.instance;
 
