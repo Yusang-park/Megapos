@@ -39,7 +39,7 @@ class _CheckPaymentScreenState extends State<CheckPaymentScreen> {
           children: [
             Expanded(
               child: FutureBuilder(
-                  future: firestore.get(),
+                  future: firestore.orderBy("Time", descending: true).get(),
                   builder: (BuildContext context,
                       AsyncSnapshot<QuerySnapshot> snapshot) {
                     if (snapshot.connectionState == ConnectionState.done) {

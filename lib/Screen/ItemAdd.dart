@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
+import 'SearchImage.dart';
 
 class ItemAdd extends StatefulWidget {
   ItemModel item;
@@ -25,8 +26,8 @@ class _ItemAddState extends State<ItemAdd> {
   File _image;
   final picker = ImagePicker();
   String _newID;
-  bool _imageType = true;    //true = network, false = file
-
+  bool _hasImage = false;
+  bool _imageType = true; //true = network, false = file
 
   firebase_storage.FirebaseStorage storage =
       firebase_storage.FirebaseStorage.instance;
@@ -41,6 +42,7 @@ class _ItemAddState extends State<ItemAdd> {
         print('No image selected.');
       }
       _imageType = false;
+      _hasImage = true;
     });
   }
 
@@ -70,25 +72,31 @@ class _ItemAddState extends State<ItemAdd> {
         .doc(context.read<Market>().marketNo)
         .collection('Product');
 
-    String image;
-    if(_image != null) {
-      String path = (widget.item.detail == null) ? (widget.item.name + '/normal.jpg')
-                    : widget.item.name + '/' + widget.item.detail + '.jpg';
+    var docID = widget.isNew ? _newID : widget.item.itemNo;
+
+    if (_hasImage && !_imageType) {          //이미지가 있으면서, 이미지타입이 파일인경우
+      String path = (widget.item.detail == null)
+          ? (widget.item.name + '/normal.jpg')
+          : widget.item.name + '/' + widget.item.detail + '.jpg';
 
       storage.ref(path).putFile(_image);
-      await storage.ref(path).getDownloadURL().then((value) => image = value);
-    }else { //No image 링크
-      image =
-      'https://firebasestorage.googleapis.com/v0/b/capstone-43f20.appspot.com/o/No_image.png?alt=media&token=20af2af2-d931-4b08-813e-0e4e60fa053d';
+      await storage.ref(path).getDownloadURL().then((value) => widget.item.image = value);
+    }
+
+    if(!_hasImage){         //이미지가 없는 경우
+      //No image 링크
+      widget.item.image=
+          'https://firebasestorage.googleapis.com/v0/b/capstone-43f20.appspot.com/o/No_image.png?alt=media&token=20af2af2-d931-4b08-813e-0e4e60fa053d';
     }
 
     return firestore
-        .doc(widget.item.itemNo).set({
+        .doc(docID)
+        .set({
           'Name': widget.item.name,
-          'Detail' : widget.item.detail,
+          'Detail': widget.item.detail,
           'Price': widget.item.price,
           'Stock': widget.item.stock,
-          'Image' : image,
+          'Image': widget.item.image,
           'Keyword': keyword
         })
         .then((value) => Navigator.of(context).pop())
@@ -102,24 +110,20 @@ class _ItemAddState extends State<ItemAdd> {
         .doc(context.read<Market>().marketNo)
         .collection('Product');
 
-
     //상품 추가라면 문서번호 미리 생성하기
-    if(widget.isNew)
-      firestore.add({
-        'Name' : '임시상품'
-      }).then((DocumentReference doc) {
+    if (widget.isNew)
+      firestore.add({'Name': '임시상품'}).then((DocumentReference doc) {
         print("새로운 아이디 : ${doc.id}");
 
         setState(() {
           _newID = doc.id;
           _imageType = true;
+          _hasImage = false;
         });
-      })
-      .catchError((onError) => print("new Product Error"));
-
+      }).catchError((onError) => print("new Product Error"));
 
     //상품 변경이라면, 텍스트 미리 채우기
-    if(!widget.isNew) {
+    if (!widget.isNew) {
       controller[0].text = widget.item.name;
       controller[1].text = widget.item.detail;
       controller[2].text = widget.item.price.toString();
@@ -133,7 +137,8 @@ class _ItemAddState extends State<ItemAdd> {
     var size = MediaQuery.of(context).size;
 
     return WillPopScope(
-      onWillPop: (){ //뒤로가기 버튼을 눌러서 pop 못하게 막기!
+      onWillPop: () {
+        //뒤로가기 버튼을 눌러서 pop 못하게 막기!
         return Future(() => false);
       },
       child: Scaffold(
@@ -185,39 +190,59 @@ class _ItemAddState extends State<ItemAdd> {
                   ),
                   Row(
                     children: [
-                      (widget.isNew && _imageType) ?
-                          Container(
-                            margin: EdgeInsets.all(5.0),
-                            decoration: BoxDecoration(
-                              border: Border.all(color: Colors.black12, width: 1.0),
-                              borderRadius: BorderRadius.circular(10.0)
-                            ),
-                            width: size.width * 0.5,
-                            height: size.height * 0.3,
-                            child: Center(
-                              child: Icon(Icons.photo_camera, size: 20.0),
-                            ),
-                          ) :
-                          _imageType ?
-                          Image.network(widget.item.image,
-                          width: size.width * 0.5,
-                          height: size.height * 0.3):
-                              Image.file(_image,
-                                  width : size.width * 0.5,
+                      !_hasImage
+                          ? Container(
+                              margin: EdgeInsets.all(5.0),
+                              decoration: BoxDecoration(
+                                  border: Border.all(
+                                      color: Colors.black12, width: 1.0),
+                                  borderRadius: BorderRadius.circular(10.0)),
+                              width: size.width * 0.5,
+                              height: size.height * 0.3,
+                              child: Center(
+                                child: Icon(Icons.photo_camera, size: 20.0),
+                              ),
+                            )
+                          : _imageType
+                              ? Image.network(widget.item.image,
+                                  width: size.width * 0.5,
+                                  height: size.height * 0.3)
+                              : Image.file(_image,
+                                  width: size.width * 0.5,
                                   height: size.height * 0.3),
-
                       Column(
                         children: [
                           TextButton(
-                            child: Text("이미지 검색하기", style: TextStyle(
-                              fontSize: 16,
-                            ),),
+                            onPressed: () async {
+                              String url = await Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (BuildContext context) =>
+                                          SearchImage()));
+
+                              print("URL is $url");
+
+                              setState(() {
+                                widget.item.image = url;
+                                _imageType = true;
+                                _hasImage = true;
+                              });
+                            },
+                            child: Text(
+                              "이미지 검색하기",
+                              style: TextStyle(
+                                fontSize: 16,
+                              ),
+                            ),
                           ),
                           TextButton(
                             onPressed: getImage,
-                            child: Text("내 디바이스에서 찾기", style: TextStyle(
+                            child: Text(
+                              "내 디바이스에서 찾기",
+                              style: TextStyle(
                                 fontSize: 16,
-                            ),),
+                              ),
+                            ),
                           ),
                         ],
                       )
@@ -244,12 +269,12 @@ class _ItemAddState extends State<ItemAdd> {
                               barrierDismissible: false,
                               context: context,
                               builder: (context) {
-                                return ProductAddDialog(itemNo: widget.item.itemNo);
+                                var itemNo =
+                                    widget.isNew ? _newID : widget.item.itemNo;
+                                return ProductAddDialog(itemNo: itemNo);
                               });
 
-                          if (isAdd)
-                            addProduct();
-
+                          if (isAdd) addProduct();
                         },
                         child: Text(
                           '등록',
@@ -259,8 +284,7 @@ class _ItemAddState extends State<ItemAdd> {
                       RaisedButton(
                         onPressed: () {
                           //미리 만들어둔 문서ID 삭제
-                          if(widget.isNew)
-                            deleteProduct();
+                          if (widget.isNew) deleteProduct();
 
                           Navigator.of(context).pop();
                         },
@@ -280,7 +304,7 @@ class _ItemAddState extends State<ItemAdd> {
                                       return ProductDeleteDialog();
                                     });
 
-                                if(isDelete) {
+                                if (isDelete) {
                                   deleteProduct();
                                   Navigator.of(context).pop();
                                 }
@@ -307,21 +331,18 @@ class _ItemAddState extends State<ItemAdd> {
         .doc(context.read<Market>().marketNo)
         .collection('Product');
 
-
-    if(widget.isNew) {
+    if (widget.isNew) {
       return firestore
           .doc(_newID)
           .delete()
-          .then((value) =>
-          print(
+          .then((value) => print(
               "*************************Product Deleted ${widget.item.itemNo}"))
           .catchError((error) => print("Failed to delete user: $error"));
-    }else{
+    } else {
       return firestore
           .doc(widget.item.itemNo)
           .delete()
-          .then((value) =>
-          print(
+          .then((value) => print(
               "*************************Product Deleted ${widget.item.itemNo}"))
           .catchError((error) => print("Failed to delete user: $error"));
     }

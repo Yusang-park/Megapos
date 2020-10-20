@@ -109,6 +109,7 @@ class _ItemManageState extends State<ItemManage> {
               context,
               MaterialPageRoute(
                   builder: (BuildContext context) => ItemAdd(
+                    item: ItemModel(),
                         isNew: true,
                       )));
           setState(() {});
