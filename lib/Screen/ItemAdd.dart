@@ -1,3 +1,4 @@
+import 'package:capstone/Model/Item.dart';
 import 'package:capstone/Model/Market.dart';
 import 'package:capstone/Widget/ProductAddDialog.dart';
 import 'package:capstone/Widget/ProductDeleteDialog.dart';
@@ -10,15 +11,10 @@ import 'package:provider/provider.dart';
 
 
 class ItemAdd extends StatefulWidget {
-  String itemNo;
-  String marketNo;
-  String name;
-  String detail;
-  String price;
-  String stock;
+  ItemModel item;
   bool isNew;
 
-  ItemAdd({this.itemNo, this.marketNo, this.name, this.detail, this.price, this.stock, this.isNew});
+  ItemAdd({this.item, this.isNew});
 
   @override
   _ItemAddState createState() => _ItemAddState();
@@ -26,9 +22,11 @@ class ItemAdd extends StatefulWidget {
 
 class _ItemAddState extends State<ItemAdd> {
   List<String> keyword = ['garbage'];
-
   File _image;
   final picker = ImagePicker();
+  String _newID;
+  bool _imageType = true;    //true = network, false = file
+
 
   firebase_storage.FirebaseStorage storage =
       firebase_storage.FirebaseStorage.instance;
@@ -42,6 +40,7 @@ class _ItemAddState extends State<ItemAdd> {
       } else {
         print('No image selected.');
       }
+      _imageType = false;
     });
   }
 
@@ -56,11 +55,11 @@ class _ItemAddState extends State<ItemAdd> {
     keyword.clear();
     int i, j;
 
-    print(widget.name.length);
-    for (i = 0; i <= widget.name.length - 1; i++) {
-      for (j = i + 1; j <= widget.name.length; j++) {
-        keyword.add(widget.name.substring(i, j));
-        print(widget.name.substring(i, j));
+    var _name = widget.item.name;
+    for (i = 0; i <= _name.length - 1; i++) {
+      for (j = i + 1; j <= _name.length; j++) {
+        keyword.add(_name.substring(i, j));
+        print(_name.substring(i, j));
       }
     }
   }
@@ -73,8 +72,8 @@ class _ItemAddState extends State<ItemAdd> {
 
     String image;
     if(_image != null) {
-      String path = (widget.detail == null) ? (widget.name + '/normal.jpg')
-                    : widget.name + '/' + widget.detail + '.jpg';
+      String path = (widget.item.detail == null) ? (widget.item.name + '/normal.jpg')
+                    : widget.item.name + '/' + widget.item.detail + '.jpg';
 
       storage.ref(path).putFile(_image);
       await storage.ref(path).getDownloadURL().then((value) => image = value);
@@ -84,16 +83,16 @@ class _ItemAddState extends State<ItemAdd> {
     }
 
     return firestore
-        .doc(widget.itemNo).set({
-          'Name': widget.name,
-          'Detail' : widget.detail,
-          'Price': int.parse(widget.price),
-          'Stock': int.parse(widget.stock),
+        .doc(widget.item.itemNo).set({
+          'Name': widget.item.name,
+          'Detail' : widget.item.detail,
+          'Price': widget.item.price,
+          'Stock': widget.item.stock,
           'Image' : image,
           'Keyword': keyword
         })
         .then((value) => Navigator.of(context).pop())
-        .catchError((error) => print("Error"));
+        .catchError((error) => print("add Product Error"));
   }
 
   @override
@@ -108,13 +107,24 @@ class _ItemAddState extends State<ItemAdd> {
     if(widget.isNew)
       firestore.add({
         'Name' : '임시상품'
-      }).then((value) => widget.itemNo = value.id)
-      .catchError((onError) => print("Error"));
+      }).then((DocumentReference doc) {
+        print("새로운 아이디 : ${doc.id}");
 
-    controller[0].text = widget.name;
-    controller[1].text = widget.detail;
-    controller[2].text = widget.price;
-    controller[3].text = widget.stock;
+        setState(() {
+          _newID = doc.id;
+          _imageType = true;
+        });
+      })
+      .catchError((onError) => print("new Product Error"));
+
+
+    //상품 변경이라면, 텍스트 미리 채우기
+    if(!widget.isNew) {
+      controller[0].text = widget.item.name;
+      controller[1].text = widget.item.detail;
+      controller[2].text = widget.item.price.toString();
+      controller[3].text = widget.item.stock.toString();
+    }
     super.initState();
   }
 
@@ -123,9 +133,8 @@ class _ItemAddState extends State<ItemAdd> {
     var size = MediaQuery.of(context).size;
 
     return WillPopScope(
-      onWillPop: (){ //뒤로가기 버튼을 눌러서 pop할 경우
-        deleteProduct();
-        return Future(() => true);
+      onWillPop: (){ //뒤로가기 버튼을 눌러서 pop 못하게 막기!
+        return Future(() => false);
       },
       child: Scaffold(
         resizeToAvoidBottomInset: false, //키보드 올라올 때 오버플로우 발생 방지
@@ -174,29 +183,45 @@ class _ItemAddState extends State<ItemAdd> {
                     decoration: InputDecoration(labelText: '현 재고량'),
                     controller: controller[3],
                   ),
-                  GestureDetector(
-                    onTap: getImage,
-                    child: Container(
-                      height: size.height * 0.4,
-                      margin: EdgeInsets.only(top: 5.0),
-                      decoration: BoxDecoration(
-                          border: Border.all(width: 1, color: Colors.black54),
-                          borderRadius: BorderRadius.circular(10.0)),
-                      child: Center(
-                        child: _image == null
-                            ? Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    Icons.photo_camera,
-                                    size: 20.0,
-                                  ),
-                                  Text("상품 이미지 업로드")
-                                ],
-                              )
-                            : Image.file(_image),
-                      ),
-                    ),
+                  Row(
+                    children: [
+                      (widget.isNew && _imageType) ?
+                          Container(
+                            margin: EdgeInsets.all(5.0),
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.black12, width: 1.0),
+                              borderRadius: BorderRadius.circular(10.0)
+                            ),
+                            width: size.width * 0.5,
+                            height: size.height * 0.3,
+                            child: Center(
+                              child: Icon(Icons.photo_camera, size: 20.0),
+                            ),
+                          ) :
+                          _imageType ?
+                          Image.network(widget.item.image,
+                          width: size.width * 0.5,
+                          height: size.height * 0.3):
+                              Image.file(_image,
+                                  width : size.width * 0.5,
+                                  height: size.height * 0.3),
+
+                      Column(
+                        children: [
+                          TextButton(
+                            child: Text("이미지 검색하기", style: TextStyle(
+                              fontSize: 16,
+                            ),),
+                          ),
+                          TextButton(
+                            onPressed: getImage,
+                            child: Text("내 디바이스에서 찾기", style: TextStyle(
+                                fontSize: 16,
+                            ),),
+                          ),
+                        ],
+                      )
+                    ],
                   ),
                   Divider(
                     thickness: 2,
@@ -207,10 +232,10 @@ class _ItemAddState extends State<ItemAdd> {
                       RaisedButton(
                         onPressed: () async {
                           setState(() {
-                            widget.name = controller[0].text;
-                            widget.detail = controller[1].text;
-                            widget.price = controller[2].text;
-                            widget.stock = controller[3].text;
+                            widget.item.name = controller[0].text;
+                            widget.item.detail = controller[1].text;
+                            widget.item.price = int.parse(controller[2].text);
+                            widget.item.stock = int.parse(controller[3].text);
 
                             makeKeyword();
                           });
@@ -219,7 +244,7 @@ class _ItemAddState extends State<ItemAdd> {
                               barrierDismissible: false,
                               context: context,
                               builder: (context) {
-                                return ProductAddDialog(itemNo: widget.itemNo);
+                                return ProductAddDialog(itemNo: widget.item.itemNo);
                               });
 
                           if (isAdd)
@@ -237,7 +262,7 @@ class _ItemAddState extends State<ItemAdd> {
                           if(widget.isNew)
                             deleteProduct();
 
-                          Navigator.pop(context);
+                          Navigator.of(context).pop();
                         },
                         child: Text(
                           '취소',
@@ -255,10 +280,10 @@ class _ItemAddState extends State<ItemAdd> {
                                       return ProductDeleteDialog();
                                     });
 
-                                deleteProduct();
-
-
-                                Navigator.of(context).pop();
+                                if(isDelete) {
+                                  deleteProduct();
+                                  Navigator.of(context).pop();
+                                }
                               },
                         child: Text(
                           '삭제',
@@ -283,10 +308,22 @@ class _ItemAddState extends State<ItemAdd> {
         .collection('Product');
 
 
-    return firestore
-        .doc(widget.itemNo)
-        .delete()
-        .then((value) => print("*************************8Product Deleted ${widget.itemNo}"))
-        .catchError((error) => print("Failed to delete user: $error"));
+    if(widget.isNew) {
+      return firestore
+          .doc(_newID)
+          .delete()
+          .then((value) =>
+          print(
+              "*************************Product Deleted ${widget.item.itemNo}"))
+          .catchError((error) => print("Failed to delete user: $error"));
+    }else{
+      return firestore
+          .doc(widget.item.itemNo)
+          .delete()
+          .then((value) =>
+          print(
+              "*************************Product Deleted ${widget.item.itemNo}"))
+          .catchError((error) => print("Failed to delete user: $error"));
+    }
   }
 }

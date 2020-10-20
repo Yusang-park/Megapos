@@ -11,7 +11,7 @@ class SelectedItem {
   int sumPrice;
 
   SelectedItem(String itemNo, String marketNo) {
-    item = ItemModel(itemNo, marketNo);
+    item = ItemModel.fromDB(itemNo, marketNo);
     sumPrice = 0;
     count = 0;
   }

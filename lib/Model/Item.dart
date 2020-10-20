@@ -1,13 +1,24 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ItemModel {
+  String itemNo;
   String name;
   String detail;
   int price;
   int stock;
   String image;
 
-  ItemModel(String itemNo, String marketNo) {
+
+  void setItemNo(String itemNo){
+    this.itemNo = itemNo;
+  }
+
+  ItemModel({
+      this.itemNo, this.name, this.detail, this.price, this.stock, this.image});
+
+  ItemModel.fromDB(String itemNo, String marketNo) {
+    this.itemNo = itemNo;
+
     CollectionReference firebase = FirebaseFirestore.instance
         .collection('Store')
         .doc(marketNo)

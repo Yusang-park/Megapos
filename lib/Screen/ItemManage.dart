@@ -1,3 +1,4 @@
+import 'package:capstone/Model/Item.dart';
 import 'package:capstone/Model/Market.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
@@ -148,12 +149,14 @@ class _ItemListState extends State<ItemList> {
               children: snapshot.data.docs.map((DocumentSnapshot document) {
                 return ItemTile(
                   key: ValueKey(document.id),
-                  itemNo: document.id,
-                  name: document.data()['Name'],
-                  detail: document.data()['Detail'],
-                  price: document.data()['Price'].toString(),
-                  stock: document.data()['Stock'].toString(),
-                  image: document.data()['Image'],
+                  item: ItemModel(
+                    itemNo: document.id,
+                    name: document.data()['Name'],
+                    detail: document.data()['Detail'],
+                    price: document.data()['Price'],
+                    stock: document.data()['Stock'],
+                    image: document.data()['Image'],
+                  ),
                   updateList: justSetState,
                 );
               }).toList(),
@@ -165,22 +168,12 @@ class _ItemListState extends State<ItemList> {
 }
 
 class ItemTile extends StatefulWidget {
-  String itemNo;
-  String name;
-  String detail;
-  String price;
-  String stock;
-  String image;
+  ItemModel item;
   Function updateList;
 
   ItemTile({
     Key key,
-    this.itemNo,
-    this.name,
-    this.detail,
-    this.price,
-    this.stock,
-    this.image,
+    this.item,
     this.updateList
   }) : super(key: key);
 
@@ -199,10 +192,7 @@ class _ItemTileState extends State<ItemTile> {
             context,
             MaterialPageRoute(
                 builder: (BuildContext context) => ItemAdd(
-                      itemNo: widget.itemNo,
-                      name: widget.name,
-                      price: widget.price,
-                      stock: widget.stock,
+                      item: widget.item,
                       isNew: false,
                     )));
         widget.updateList();
@@ -221,11 +211,11 @@ class _ItemTileState extends State<ItemTile> {
               flex: 1,
               child: Container(
                   height: size.height * 0.07,
-                  child: Image.network(widget.image)
+                  child: Image.network(widget.item.image)
             ),),
-            Expanded(flex: 1, child: Text('${widget.name} ${widget.detail}')),
-            Expanded(flex: 1, child: Text(widget.price + '원')),
-            Expanded(flex: 1, child: Text(widget.stock + '개'))
+            Expanded(flex: 1, child: Text('${widget.item.name} ${widget.item.detail}')),
+            Expanded(flex: 1, child: Text('${widget.item.price}원')),
+            Expanded(flex: 1, child: Text('${widget.item.stock}개'))
           ],
         ),
       ),
