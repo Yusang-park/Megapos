@@ -23,7 +23,7 @@ class ResultScreen extends StatelessWidget {
 
     Timer.periodic(Duration(seconds: 3), (timer){
       timer.cancel();
-      Navigator.pop(context, true);
+      Navigator.pop(context);
     });
 
 
@@ -33,27 +33,29 @@ class ResultScreen extends StatelessWidget {
         backgroundColor: Colors.deepPurple,
         title: Text('결제 내역'),
       ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            isSuccessed ? '결제에 성공하였습니다' : '결제에 실패하였습니다',
-            style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 26.0,
-                color: Colors.white
+      body: Center(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              isSuccessed ? '결제에 성공하였습니다' : '결제에 실패하였습니다',
+              style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 26.0,
+                  color: Colors.white
+              ),
             ),
-          ),
-          Text(
-            '결제 내역 페이지로 이동합니다',
-            style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 16.0,
-                color: Colors.white
+            Text(
+              '결제 내역 페이지로 이동합니다',
+              style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16.0,
+                  color: Colors.white
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

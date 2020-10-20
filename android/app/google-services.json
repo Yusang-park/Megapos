@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "899933531427-uig5uspic9ladgberuectgoh7qmpkbes.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.codingslave.capstone",
+            "certificate_hash": "eee33d415d1a3e855b9613da858be19d400384f4"
+          }
+        },
+        {
           "client_id": "899933531427-100vskv61oll1miuthj471qktqe8f7dh.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {

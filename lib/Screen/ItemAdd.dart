@@ -11,13 +11,14 @@ import 'package:provider/provider.dart';
 
 class ItemAdd extends StatefulWidget {
   String itemNo;
+  String marketNo;
   String name;
   String detail;
   String price;
   String stock;
   bool isNew;
 
-  ItemAdd({this.itemNo, this.name, this.detail, this.price, this.stock, this.isNew});
+  ItemAdd({this.itemNo, this.marketNo, this.name, this.detail, this.price, this.stock, this.isNew});
 
   @override
   _ItemAddState createState() => _ItemAddState();
@@ -30,10 +31,6 @@ class _ItemAddState extends State<ItemAdd> {
   final picker = ImagePicker();
 
   //TODO : 매장번호바꾸기
-  CollectionReference firestore = FirebaseFirestore.instance
-      .collection('Store')
-      .doc('0')
-      .collection('Product');
 
   firebase_storage.FirebaseStorage storage =
       firebase_storage.FirebaseStorage.instance;
@@ -71,6 +68,11 @@ class _ItemAddState extends State<ItemAdd> {
   }
 
   Future<void> addProduct() async {
+    CollectionReference firestore = FirebaseFirestore.instance
+        .collection('Store')
+        .doc(context.read<Market>().marketNo)
+        .collection('Product');
+
     String image;
     if(_image != null) {
       String path = (widget.detail == null) ? (widget.name + '/normal.jpg')
@@ -98,6 +100,12 @@ class _ItemAddState extends State<ItemAdd> {
 
   @override
   void initState() {
+    CollectionReference firestore = FirebaseFirestore.instance
+        .collection('Store')
+        .doc(context.read<Market>().marketNo)
+        .collection('Product');
+
+
     //상품 추가라면 문서번호 미리 생성하기
     if(widget.isNew)
       firestore.add({
@@ -271,6 +279,12 @@ class _ItemAddState extends State<ItemAdd> {
   }
 
   Future<void> deleteProduct() {
+    CollectionReference firestore = FirebaseFirestore.instance
+        .collection('Store')
+        .doc(context.read<Market>().marketNo)
+        .collection('Product');
+
+
     return firestore
         .doc(widget.itemNo)
         .delete()
