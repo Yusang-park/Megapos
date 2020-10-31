@@ -161,7 +161,6 @@ class InitAppState extends State<InitApp> {
         ),
       );
     }
-
     // Show a loader until FlutterFire is initialized
     if (!isMarketLoad || !_initialized || !isUserLoad) {
       return MaterialApp(

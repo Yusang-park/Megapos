@@ -5,9 +5,9 @@ import 'package:nfc_in_flutter/nfc_in_flutter.dart';
 
 
 class ProductAddDialog extends StatefulWidget {
-  String itemNo;
-
-  ProductAddDialog({this.itemNo});
+  String No;
+  bool isItem;
+  ProductAddDialog({@required this.No, @required this.isItem});
 
   @override
   _ProductAddDialogState createState() => _ProductAddDialogState();
@@ -24,9 +24,16 @@ class _ProductAddDialogState extends State<ProductAddDialog> {
   }
 
   void writeNFC(){
-    NDEFMessage newMessage = NDEFMessage.withRecords(
-       [ NDEFRecord.type("coding/shudra", "itemNo:" + widget.itemNo) ]
-    );
+    NDEFMessage newMessage;
+    if(widget.isItem)
+      newMessage = NDEFMessage.withRecords(
+          [ NDEFRecord.type("coding/shudra", "itemNo:" + widget.No) ]
+      );
+    else{
+      newMessage = NDEFMessage.withRecords(
+          [ NDEFRecord.type("coding/shudra", "marketNo:" + widget.No) ]
+      );
+    }
     Stream<NDEFTag> stream = NFC.writeNDEF(newMessage, once: true);
     stream.listen((NDEFTag tag) {
       print("write ok");
@@ -48,7 +55,7 @@ class _ProductAddDialogState extends State<ProductAddDialog> {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
       elevation: 10.0,
       insetPadding: EdgeInsets.all(8.0),
-      title:  Text("상품 등록",
+      title:  Text("등록",
         style: TextStyle(
             fontSize: 22,
             fontWeight: FontWeight.bold,
@@ -66,7 +73,7 @@ class _ProductAddDialogState extends State<ProductAddDialog> {
                   Text("잠시 후 꺼집니다")
                 ],
               )
-                  : Text("해당 상품의 NFC가격표에\n 스마트폰을 태그해주세요"),
+                  : Text("해당 NFC에\n 스마트폰을 태그해주세요"),
             ),
         ),
       actions: isTagged ? null : [

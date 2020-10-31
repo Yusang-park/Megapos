@@ -271,7 +271,7 @@ class _ItemAddState extends State<ItemAdd> {
                               builder: (context) {
                                 var itemNo =
                                     widget.isNew ? _newID : widget.item.itemNo;
-                                return ProductAddDialog(itemNo: itemNo);
+                                return ProductAddDialog(No: itemNo, isItem: true,);
                               });
 
                           if (isAdd) addProduct();

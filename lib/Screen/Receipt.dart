@@ -40,12 +40,29 @@ class ReceiptScreen extends StatelessWidget {
         .catchError((error) => print("Error"));
   }
 
+  //판매 갯수만큼 재고량 빼기
+  Future<void> subStock(BuildContext context, Market market){
+    CollectionReference firestore = FirebaseFirestore.instance
+        .collection('Store')
+        .doc(market.marketNo)
+        .collection('Product');
+    
+    for(int i=0; i < list.length; i++){
+      firestore.doc(list[i].itemNo)
+          .update({
+        'Stock' : list[i].selectedItem.item.stock - list[i].selectedItem.count
+      }).then((value) => print("Stock Updated"))
+          .catchError((error) => print("Sub Stock Error"));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final _market = context.watch<Market>();
     final _user = context.watch<UserModel>();
     final now = DateTime.now();
     writeReceipt(context, _market, _user, now);
+    subStock(context, _market);
 
     return Scaffold(
       appBar: AppBar(

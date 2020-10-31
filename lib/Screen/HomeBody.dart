@@ -12,6 +12,8 @@ import 'package:capstone/Widget/SignIn.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import 'SearchImage.dart';
+
 class HomeBody extends StatefulWidget {
   @override
   _HomeBodyState createState() => _HomeBodyState();
@@ -64,6 +66,16 @@ class _HomeBodyState extends State<HomeBody> {
                       builder: (BuildContext context) => CheckPaymentScreen()));
             },
             child: Text('거래내역 확인')),
+        RaisedButton(
+            onPressed: () async {
+              String url = await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (BuildContext context) => SearchImage()));
+
+              print("URL is $url");
+            },
+            child: Text('이미지검색테스트')),
       ],
     );
   }

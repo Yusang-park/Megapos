@@ -125,7 +125,7 @@ class _ReceiptTileState extends State<ReceiptTile> {
           widget.isExpanded
               ? ConstrainedBox(
                   constraints: BoxConstraints(
-                      minHeight: 20.0, maxHeight: (30.0 * widget.list.length)),
+                      minHeight: 20.0, maxHeight: (33.0 * widget.list.length)),
                   child: ListView.builder(
                       itemCount: widget.list.length,
                       itemBuilder: (context, index) {
