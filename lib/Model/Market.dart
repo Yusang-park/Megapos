@@ -30,7 +30,6 @@ class Market with ChangeNotifier {
 
     //값이 변했음을 알림
     notifyListeners();
-    print("프롬디비 : 값이 변경됨을 알림");
   }
 
   Future<void> writeToDB() {

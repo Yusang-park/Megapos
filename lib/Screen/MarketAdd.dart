@@ -1,5 +1,6 @@
 import 'package:capstone/Model/Item.dart';
 import 'package:capstone/Model/Market.dart';
+import 'package:capstone/Model/User.dart';
 import 'package:capstone/Widget/ProductAddDialog.dart';
 import 'package:capstone/Widget/ProductDeleteDialog.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
@@ -64,20 +65,35 @@ class _MarketAddState extends State<MarketAdd> {
     }
   }
 
-  Future<void> addProduct() async{
+  Future<void> setManagerInfo() async{
+    String docID = context.read<UserModel>().userNo;
+    CollectionReference firestore = FirebaseFirestore.instance
+        .collection('User');
+
+    String marketNo = context.read<Market>().marketNo;
+
+    return firestore.doc(docID).set({
+      'AuthState' : 'Manager',
+      'MarketNo' : marketNo
+    }).then((value) => print("Manager set OK"))
+        .catchError((error) => print("Manager set Error"));
+  }
+
+
+  Future<void> addStore() async{
     setState(() {
       widget.market.marketNo = docID.toString();
     });
 
     await widget.market.writeToDB();
-    context.read<Market>().readFromDB(docID.toString());
+    await context.read<Market>().readFromDB(docID.toString());
+    await setManagerInfo();
+
     Navigator.pushReplacement(
         context,
         MaterialPageRoute(
             builder: (BuildContext context) => ItemManage()));
   }
-
-
 
 
   @override
@@ -166,7 +182,7 @@ class _MarketAddState extends State<MarketAdd> {
                           return ProductAddDialog(No: docID.toString(), isItem: false,);
                         });
 
-                    if (isAdd) addProduct();
+                    if (isAdd) addStore();
                   },
                   child: Text(
                     '등록',

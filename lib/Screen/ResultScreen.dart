@@ -23,7 +23,7 @@ class ResultScreen extends StatelessWidget {
 
     Timer.periodic(Duration(seconds: 3), (timer){
       timer.cancel();
-      Navigator.pop(context);
+      Navigator.pop(context, isSuccessed);
     });
 
 

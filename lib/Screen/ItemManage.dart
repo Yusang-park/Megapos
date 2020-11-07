@@ -15,6 +15,7 @@ class ItemManage extends StatefulWidget {
 
 class _ItemManageState extends State<ItemManage> {
   TextEditingController _searchController;
+  bool isSearch = false;
 
   void initState() {
     super.initState();
@@ -64,17 +65,34 @@ class _ItemManageState extends State<ItemManage> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Expanded(
-                              child: TextField(
-                                controller: _searchController,
-                                decoration: InputDecoration(
-                                    isDense: true,
-                                    hintText: '   상품명을 검색하세요',
-                                    enabledBorder: InputBorder.none,
-                                    focusedBorder: InputBorder.none),
+                              child: Padding(
+                                padding: const EdgeInsets.only(left: 15.0),
+                                child: TextField(
+                                  onEditingComplete: (){
+                                    setState(() {
+                                      isSearch = !isSearch;
+                                      if(!isSearch)
+                                        isSearch = !isSearch;
+                                    });
+
+                                  },
+                                  controller: _searchController,
+                                  decoration: InputDecoration(
+                                      isDense: true,
+                                      hintText: '상품명을 검색하세요',
+                                      enabledBorder: InputBorder.none,
+                                      focusedBorder: InputBorder.none),
+                                ),
                               ),
                             ),
                             IconButton(
-                                icon: Icon(Icons.search), onPressed: null)
+                                icon: isSearch ? Icon(Icons.clear) : Icon(Icons.search), onPressed: (){
+                                  setState(() {
+                                    if(isSearch)
+                                      _searchController.clear();
+                                    isSearch = !isSearch;
+                                  });
+                            })
                           ],
                         )),
                   ],
@@ -99,7 +117,7 @@ class _ItemManageState extends State<ItemManage> {
             ],
           ),
         ),
-        Expanded(child: ItemList()),
+        Expanded(child: ItemList(isSearch: isSearch, keyword: _searchController.text,)),
       ]),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
@@ -120,6 +138,11 @@ class _ItemManageState extends State<ItemManage> {
 }
 
 class ItemList extends StatefulWidget {
+  bool isSearch;
+  String keyword;
+
+  ItemList({this.isSearch, this.keyword});
+
   @override
   _ItemListState createState() => _ItemListState();
 }
@@ -143,7 +166,7 @@ class _ItemListState extends State<ItemList> {
     }
 
     return FutureBuilder(
-        future: firestore.get(),
+        future: widget.isSearch ? firestore.where('Keyword', arrayContains: widget.keyword).get() : firestore.get(),
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
             return ListView(

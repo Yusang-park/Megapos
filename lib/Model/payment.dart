@@ -1,4 +1,7 @@
 import 'package:capstone/Model/User.dart';
+import 'package:capstone/Screen/Receipt.dart';
+import 'package:capstone/Widget/BasketTile.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 /* 아임포트 결제 모듈을 불러옵니다. */
@@ -10,7 +13,8 @@ class Payment extends StatelessWidget {
   final UserModel userModel;
   final int sumPrice;
   final String name;
-  Payment(this.userModel, this.sumPrice, this.name);
+  final List<BasketTile> list;
+  Payment(this.userModel, this.sumPrice, this.name, this.list);
 
   @override
   Widget build(BuildContext context) {
@@ -51,11 +55,10 @@ class Payment extends StatelessWidget {
       }),
       /* [필수입력] 콜백 함수 */
       callback: (Map<String, String> result) {
-        Navigator.pushReplacementNamed(
-          context,
-          '/result',
-          arguments: result,
-        );
+        Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+                builder: (BuildContext context) => ReceiptScreen(list : list, sumPrice : sumPrice, result: result,)));
       },
     );
   }

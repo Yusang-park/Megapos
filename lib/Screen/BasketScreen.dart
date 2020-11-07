@@ -16,6 +16,7 @@ import '../Model/payment.dart';
 import 'package:provider/provider.dart';
 import '../Model/SelectedItem.dart';
 import '../Widget/BasketTile.dart';
+import 'Receipt.dart';
 
 StreamController<List<dynamic>> changeStream =
     StreamController.broadcast(); //타일의 내용이 변경되었을 때 사용
@@ -31,11 +32,12 @@ class _BasketScreenState extends State<BasketScreen> {
   List<BasketTile> _list = [];
   FocusNode _searchFocus = FocusNode();
   bool _searchMode = false;
-  SearchSubScreen searchSubScreen;
+  SearchSubScreen searchSubScreen = SearchSubScreen();
   int _sumPrice = 0;
   String marketName = '';
   double _searchOpacity = 0.0;
   double _mainOpacity = 1.0;
+
   @override
   void initState() {
     _tagStream();
@@ -115,7 +117,7 @@ class _BasketScreenState extends State<BasketScreen> {
   void resetBasket() {
     _list.clear();
     _sumPrice = 0;
-    // setState(() {}); 이거 안해도 되네.. 왜지
+    setState(() {});
   }
 
   SelectedItem loadDB(itemNo, marketNo) {
@@ -152,111 +154,127 @@ class _BasketScreenState extends State<BasketScreen> {
     final horizontal = width * 0.02;
     final statusBarHeight = MediaQuery.of(context).padding.top;
 
-    return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        backgroundColor: Colors.deepPurple,
-        leading: Text(''),
-        title: Text(
-          context.watch<Market>().name,
-          style: TextStyle(
-              color: Colors.white,
-              fontFamily: 'Jalnan',
-              fontWeight: FontWeight.bold),
-        ),
-      ),
-
-      resizeToAvoidBottomInset: false, //키보드가 올라왔을때 화면이 안밀림
-      body: InkWell(
-          highlightColor: Colors.transparent, //모서리로 퍼져나가는 이펙트
-
-          splashColor: Colors.transparent, //클릭시 원형 이펙트
-          onTap: () {
-            setState(() {
-              FocusScope.of(context)
-                  .requestFocus(FocusNode()); //textfield의 포커스를 빼앗음
+    return WillPopScope(
+      onWillPop: () {
+        return showDialog(
+            barrierDismissible: false,
+            context: context,
+            builder: (context) {
+              return ConfirmDialog(
+                height: height * 0.5,
+                width: width * 0.6,
+                bodyText: "정말 종료하실건가요?",
+              );
             });
-          },
-          //제스처를 하기 위한 위젯
-          child: Padding(
-              padding: EdgeInsets.only(
-                  left: horizontal, right: horizontal, top: height * 0.02),
-              child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Container(
-                      padding: EdgeInsets.only(left: width * 0.05),
-                      margin: EdgeInsets.only(
-                        bottom: height * 0.01,
-                      ),
-                      width: width * 0.85,
-                      height: height * 0.06,
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(50),
-                          color: Colors.black12),
-                      child: Stack(
-                        alignment: Alignment.centerLeft,
-                        children: [
-                          TextField(
-                            maxLines: 1,
-                            textAlign: TextAlign.start,
-                            focusNode: _searchFocus,
-                            controller: _searchController,
-                            decoration: InputDecoration.collapsed(
-                                hintText: "상품명을 검색하세요."),
-                            onChanged: (value) {
-                              if (_searchController.text == "") {
-                                searchSubScreen.streamClearController.add(true);
-                              } else {
-                                searchSubScreen.streamController
-                                    .add(_searchController.text);
-                              }
-                              setState(() => this);
-                            },
-                            onTap: () {
-                              setState(() {
-                                searchSubScreen.streamClearController.add(true);
-                              });
-                            },
-                          ),
-                          Positioned(
-                              right: 0.0,
-                              child: _searchController.text.isNotEmpty
-                                  ? IconButton(
-                                      icon: Icon(Icons.close_rounded),
-                                      onPressed: () {
-                                        //TODO : 리스트 뷰 스크린 필요
-                                        setState(() {
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          centerTitle: true,
+          backgroundColor: Colors.deepPurple,
+          leading: Text(''),
+          title: Text(
+            context.watch<Market>().name,
+            style: TextStyle(
+                color: Colors.white,
+                fontFamily: 'Jalnan',
+                fontWeight: FontWeight.bold),
+          ),
+        ),
+
+        resizeToAvoidBottomInset: false, //키보드가 올라왔을때 화면이 안밀림
+        body: InkWell(
+            highlightColor: Colors.transparent, //모서리로 퍼져나가는 이펙트
+
+            splashColor: Colors.transparent, //클릭시 원형 이펙트
+            onTap: () {
+              setState(() {
+                FocusScope.of(context)
+                    .requestFocus(FocusNode()); //textfield의 포커스를 빼앗음
+              });
+            },
+            //제스처를 하기 위한 위젯
+            child: Padding(
+                padding: EdgeInsets.only(
+                    left: horizontal, right: horizontal, top: height * 0.02),
+                child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Container(
+                        padding: EdgeInsets.only(left: width * 0.05),
+                        margin: EdgeInsets.only(
+                          bottom: height * 0.01,
+                        ),
+                        width: width * 0.85,
+                        height: height * 0.06,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(50),
+                            color: Colors.black12),
+                        child: Stack(
+                          alignment: Alignment.centerLeft,
+                          children: [
+                            TextField(
+                              maxLines: 1,
+                              textAlign: TextAlign.start,
+                              focusNode: _searchFocus,
+                              controller: _searchController,
+                              decoration: InputDecoration.collapsed(
+                                  hintText: "상품명을 검색하세요."),
+                              onChanged: (value) {
+                                if (_searchController.text == "") {
+                                  searchSubScreen.streamClearController
+                                      .add(true);
+                                } else {
+                                  searchSubScreen.streamController
+                                      .add(_searchController.text);
+                                }
+                                setState(() => this);
+                              },
+                              onTap: () {
+                                setState(() {
+                                  searchSubScreen.streamClearController
+                                      .add(true);
+                                });
+                              },
+                            ),
+                            Positioned(
+                                right: 0.0,
+                                child: _searchController.text.isNotEmpty
+                                    ? IconButton(
+                                        icon: Icon(Icons.close_rounded),
+                                        onPressed: () {
+                                          //TODO : 리스트 뷰 스크린 필요
                                           setState(() {
-                                            _searchOpacity = 0.0;
-                                            _mainOpacity = 1.0;
-                                            _searchController.clear();
-                                            FocusScope.of(context)
-                                                .requestFocus(FocusNode());
-                                            LogicalKeyboardKey.close;
+                                            setState(() {
+                                              _searchOpacity = 0.0;
+                                              _mainOpacity = 1.0;
+                                              _searchController.clear();
+                                              FocusScope.of(context)
+                                                  .requestFocus(FocusNode());
+                                              LogicalKeyboardKey.close;
+                                            });
                                           });
-                                        });
-                                      },
-                                    )
-                                  : SizedBox()),
-                        ],
+                                        },
+                                      )
+                                    : SizedBox()),
+                          ],
+                        ),
                       ),
-                    ),
-                    Divider(),
-                    Expanded(
-                      child: StreamBuilder(
-                        stream: changeStream.stream,
-                        builder: (context, snapshot) {
-                          return _listWidget(width, height);
-                        },
+                      Divider(),
+                      Expanded(
+                        child: StreamBuilder(
+                          stream: changeStream.stream,
+                          builder: (context, snapshot) {
+                            return _listWidget(width, height);
+                          },
+                        ),
                       ),
-                    ),
-                    Opacity(
-                      child: _bottomWidget(width, height),
-                      opacity: _mainOpacity,
-                    ),
-                  ]))),
+                      Opacity(
+                        child: _bottomWidget(width, height),
+                        opacity: _mainOpacity,
+                      ),
+                    ]))),
+      ),
     );
   }
 
@@ -344,18 +362,39 @@ class _BasketScreenState extends State<BasketScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             RaisedButton(
-              onPressed: () async {
-                final result = await Navigator.push(
+              onPressed: () async{
+                bool isPay;
+
+                if(_list.length == 0)
+                  showDialog(context: context,
+                  builder: (context) {
+                    return ConfirmDialog(
+                      height: height * 0.5,
+                      width: width * 0.6,
+                      bodyText: "장바구니에 담긴 상품이 없습니다.\n상품을 선택해주세요.",
+                    );
+                  });
+                else
+                  isPay = await showDialog(
+                    barrierDismissible: false,
+                    context: context,
+                    builder: (context) {
+                      return ConfirmDialog(
+                        height: height * 0.5,
+                        width: width * 0.6,
+                        bodyText: "결제하시겠습니까?",
+                      );
+                    });
+
+                if(isPay)
+                Navigator.push(
                     context,
                     MaterialPageRoute(
                         builder: (BuildContext context) => Payment(
                             context.watch<UserModel>(),
                             _sumPrice,
-                            '${_list[0].selectedItem.item.name} 외 ${_list.length - 1}건')));
-
-                if (result) //결제 성공이라면 결제 내역 보여주기
-                  //TODO: 결제내역페이지 만들어서 푸쉬리슬레이먼트하기
-                  ;
+                            '${_list[0].selectedItem.item.name} 외 ${_list.length - 1}건',
+                            _list)));
               },
               child: Text(
                 '결제하기',
@@ -383,18 +422,18 @@ class _BasketScreenState extends State<BasketScreen> {
               },
               child: Text('장바구니 비우기'),
             ),
-            RaisedButton(
-              onPressed: () {
-                setState(() {
-                  _list.add(BasketTile(
-                    itemNo: '5g3K6glATwe52aDYfrHx',
-                    selectedItem: loadDB('5g3K6glATwe52aDYfrHx',
-                        context.read<Market>().marketNo),
-                  ));
-                });
-              },
-              child: Text('가상NFC'),
-            ),
+//            RaisedButton(
+//              onPressed: () {
+//                setState(() {
+//                  _list.add(BasketTile(
+//                    itemNo: '5g3K6glATwe52aDYfrHx',
+//                    selectedItem: loadDB('5g3K6glATwe52aDYfrHx',
+//                        context.read<Market>().marketNo),
+//                  ));
+//                });
+//              },
+//              child: Text('가상NFC'),
+//            ),
           ],
         ),
         SizedBox(
