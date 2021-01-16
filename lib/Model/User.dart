@@ -7,6 +7,7 @@ class UserModel with ChangeNotifier {
   bool isSigned;
   String userNo; //UID
   String authState;
+  String marketNo;
 
   Future<void> initUser() async {
     user = FirebaseAuth.instance.currentUser;
@@ -51,6 +52,7 @@ class UserModel with ChangeNotifier {
       //파이어베이스에서 정보 읽어와 속성에 할당
       await firebase.doc(userNo).get().then((DocumentSnapshot document) {
         this.authState = document.data()['AuthState'];
+        this.marketNo = document.data()['MarketNo'];
       });
     } catch (e) {
       await writeToDB();

@@ -14,6 +14,7 @@ import 'Screen/HomeScreen.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'Screen/Receipt.dart';
 import 'Screen/ResultScreen.dart';
 
 void main() {
@@ -161,7 +162,6 @@ class InitAppState extends State<InitApp> {
         ),
       );
     }
-
     // Show a loader until FlutterFire is initialized
     if (!isMarketLoad || !_initialized || !isUserLoad) {
       return MaterialApp(
@@ -174,7 +174,7 @@ class InitAppState extends State<InitApp> {
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 32,
-                fontFamily: 'Janlnan',
+                fontFamily: 'Jalnan',
               ),
             ),
           ),
@@ -218,7 +218,7 @@ class _MyAppState extends State<MyApp> {
         ],
         child: MaterialApp(
           routes: {
-            '/result': (context) => ResultScreen(),
+            '/result': (context) => ReceiptScreen(),
           },
           debugShowCheckedModeBanner: false,
           title: 'Flutter Demo',
@@ -238,10 +238,7 @@ class _MyAppState extends State<MyApp> {
               textTheme: ButtonTextTheme.primary,
             ),
           ),
-          //TODO : 권한에 따른 다른 화면 보여주기.
-          home: widget.user.authState == "Manager"
-              ? (ItemManage())
-              : (widget.withNfcMode ? BasketScreen() : HomeScreen()),
+          home: widget.withNfcMode ? BasketScreen() : HomeScreen(),
         ));
   }
 }

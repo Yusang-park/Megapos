@@ -1,12 +1,12 @@
 import 'dart:async';
 
+import 'package:capstone/Model/Market.dart';
+import 'package:provider/provider.dart';
 import 'package:capstone/Screen/BasketScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class SearchSubScreen extends StatefulWidget {
-  SearchSubScreen({this.marketNo});
-  final marketNo;
   @override
   _SearchSubScreenState createState() => _SearchSubScreenState();
   final StreamController<String> streamController =
@@ -42,7 +42,7 @@ class _SearchSubScreenState extends State<SearchSubScreen> {
       List<Map> tempList = List();
       CollectionReference firebase = FirebaseFirestore.instance
           .collection('Store')
-          .doc(widget.marketNo)
+          .doc(context.read<Market>().marketNo)
           .collection('Product');
 
       firebase.where('Keyword', arrayContains: data).get().then((value) => {
@@ -53,7 +53,7 @@ class _SearchSubScreenState extends State<SearchSubScreen> {
               print(map['Name']);
               map['Price'] = doc.data()['Price'];
               map['Stock'] = doc.data()['Stock'];
-              map['Image'] = 'assets/images/' + doc.id + '.jpg';
+              map['Image'] = doc.data()['Image'];
               print(map['Price']);
               print(map['Stock']);
               print(map['Image']);
@@ -119,9 +119,10 @@ class _SearchSubScreenState extends State<SearchSubScreen> {
           RaisedButton(
               onPressed: () {
                 addStream.sink.add(list[index]['itemNo']);
+                //TODO : 장바구니 담기하면, 장바구니 화면으로 넘어갔으면 좋겠음!
               },
               child: Text(
-                '장바구니\n담기', //TODO : onpress 만들어야함
+                '장바구니\n담기',
                 overflow: TextOverflow.clip,
                 textAlign: TextAlign.center,
               )),
@@ -131,15 +132,9 @@ class _SearchSubScreenState extends State<SearchSubScreen> {
   }
 
   Widget itemImage(index, width) {
-    return Image.asset(
+    return Image.network(
       list[index]['Image'],
       width: width * 0.1,
-      errorBuilder: (context, error, stackTrace) {
-        return Image.asset(
-          'assets/images/1.jpg', //TODO : 에러 이미지 삽입
-          width: width * 0.1,
-        );
-      },
     );
   }
 }
