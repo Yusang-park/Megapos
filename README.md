@@ -1,5 +1,10 @@
-<h2>Megapos</h2>
+# Megapos
 Unmanned store payment application using NFC that changes uncomfortable store usage experience
 
-<h2>Information</h2>
+# Information
 https://muhly.tistory.com/68?category=966965
+
+# Technology Stacks
+ - Flutter
+ - Firebase
+ - NFC
